@@ -14,7 +14,7 @@
     "lint": "bun --bun wb lint",
     "lint-fix": "bun --bun wb lint --fix",
     "prepare": "lefthook install || true",
-    "test": "bun wb test",
+    "test": "bun test && bun wb test",
     "typecheck": "bun --bun wb typecheck"
   },
   "prettier": "@willbooster/prettier-config",
