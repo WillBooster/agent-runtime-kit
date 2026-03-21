@@ -2,7 +2,7 @@ import { expect, test } from 'bun:test';
 
 test('runs the entrypoint with Bun', async () => {
   const process = Bun.spawn(['bun', 'run', 'src/index.ts'], {
-    cwd: import.meta.dir + '/..',
+    cwd: `${import.meta.dir}/..`,
     stderr: 'pipe',
     stdout: 'pipe',
   });
