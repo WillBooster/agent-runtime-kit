@@ -15,10 +15,14 @@
     "lint-fix": "bun --bun wb lint --fix",
     "prepare": "lefthook install || true",
     "test": "bun test && bun wb test",
+    "test:e2e-github": "bun test test/e2e/github-pr.test.ts",
     "typecheck": "bun --bun wb typecheck"
   },
   "prettier": "@willbooster/prettier-config",
-  "dependencies": {},
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "0.2.80",
+    "@openai/codex-sdk": "0.116.0"
+  },
   "devDependencies": {
     "@biomejs/biome": "2.4.7",
     "@types/bun": "1.3.10",
