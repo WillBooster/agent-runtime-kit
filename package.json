@@ -1,12 +1,23 @@
 {
   "name": "agent-runtime-kit",
-  "private": true,
+  "version": "0.0.0-semantically-released",
   "repository": "github:WillBooster/agent-runtime-kit",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "author": "WillBooster Inc.",
   "type": "module",
-  "module": "index.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "check-all-for-ai": "bun run check-for-ai && bun run test --silent",
     "check-for-ai": "bun install > /dev/null && bun run cleanup && bun run typecheck",
     "cleanup": "bun --bun wb lint --fix --format",
@@ -14,6 +25,8 @@
     "lint": "bun --bun wb lint",
     "lint-fix": "bun --bun wb lint --fix",
     "prepare": "lefthook install || true",
+    "prepublishOnly": "bun run build",
+    "release": "node node_modules/semantic-release/bin/semantic-release.js",
     "test": "bun test && bun wb test",
     "test:e2e-github": "bun test test/e2e/github-pr.test.ts",
     "typecheck": "bun --bun wb typecheck"
@@ -29,10 +42,18 @@
     "@willbooster/biome-config": "3.2.5",
     "@willbooster/prettier-config": "10.2.4",
     "@willbooster/wb": "13.4.2",
+    "conventional-changelog-conventionalcommits": "9.3.0",
     "lefthook": "2.1.4",
     "prettier": "3.8.1",
     "prettier-plugin-java": "2.8.1",
+    "semantic-release": "25.0.3",
     "sort-package-json": "3.6.1",
     "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
