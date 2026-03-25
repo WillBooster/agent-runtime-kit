@@ -105,7 +105,7 @@ export async function waitForRequiredChecksToPass(
   prNumber: number,
   intervalSeconds = 10
 ): Promise<void> {
-  const result = await runCommand(
+  const requiredResult = await runCommand(
     [
       'gh',
       'pr',
@@ -123,9 +123,24 @@ export async function waitForRequiredChecksToPass(
       throwOnError: false,
     }
   );
-  if (result.exitCode !== 0) {
-    throw new Error(`Required checks failed for PR #${prNumber}.\n${result.combined}`);
+  if (requiredResult.exitCode === 0) {
+    return;
   }
+  if (requiredResult.combined.includes('no required checks reported')) {
+    const result = await runCommand(
+      ['gh', 'pr', 'checks', String(prNumber), '--watch', '--fail-fast', '--interval', String(intervalSeconds)],
+      {
+        cwd: repoDir,
+        streamOutput: true,
+        throwOnError: false,
+      }
+    );
+    if (result.exitCode === 0) {
+      return;
+    }
+    throw new Error(`Checks failed for PR #${prNumber}.\n${result.combined}`);
+  }
+  throw new Error(`Required checks failed for PR #${prNumber}.\n${requiredResult.combined}`);
 }
 
 async function readStream(
