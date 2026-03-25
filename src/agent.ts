@@ -1,41 +1,56 @@
-import { createRuntimeClient, type RuntimeClient, type RuntimeTaskRequest, type RuntimeTaskResult } from './runtime.js';
+import { type Options, query, type SDKMessage } from '@anthropic-ai/claude-agent-sdk';
+import { createRuntimeClient, type RuntimeClient, type RuntimeTaskRequest } from './runtime.js';
 
-export type AgentSdkRequest = {
-  cwd: string;
-  env?: NodeJS.ProcessEnv;
-  metadata?: Record<string, string | undefined>;
-  task: string;
+export type AgentQueryFn = (params: { options?: Options; prompt: string }) => AsyncIterable<SDKMessage>;
+
+export type AgentRuntimeOptions = {
+  queryFn?: AgentQueryFn;
+  sdkOptions?: Omit<Options, 'cwd' | 'env'>;
 };
 
-export type AgentSdkResponse = {
-  exitCode: number;
-  outputText: string;
-  raw?: unknown;
-};
-
-export function createAgentRuntime(execute: (request: AgentSdkRequest) => Promise<AgentSdkResponse>): RuntimeClient {
-  return createRuntimeClient({
-    execute,
-    mapRequest: createAgentRequest,
-    mapResponse: createAgentResult,
-    provider: 'agent-sdk',
-  });
+export function createAgentRuntime(options: AgentRuntimeOptions = {}): RuntimeClient {
+  return createRuntimeClient('agent-sdk', async (request) => runAgentTask(request, options));
 }
 
-function createAgentRequest(request: RuntimeTaskRequest): AgentSdkRequest {
+async function runAgentTask(
+  request: RuntimeTaskRequest,
+  options: AgentRuntimeOptions
+): Promise<{ outputText: string; raw: SDKMessage[] }> {
+  const messages: SDKMessage[] = [];
+  let outputText = '';
+
+  for await (const message of (options.queryFn ?? query)({
+    prompt: request.instructions,
+    options: {
+      ...options.sdkOptions,
+      cwd: request.cwd,
+      env: request.env,
+    },
+  })) {
+    messages.push(message);
+    outputText = getLatestOutputText(message, outputText);
+  }
+
   return {
-    cwd: request.cwd,
-    env: request.env,
-    metadata: request.metadata,
-    task: request.instructions,
+    outputText,
+    raw: messages,
   };
 }
 
-function createAgentResult(response: AgentSdkResponse): RuntimeTaskResult {
-  return {
-    exitCode: response.exitCode,
-    outputText: response.outputText,
-    provider: 'agent-sdk',
-    raw: response.raw,
+function getLatestOutputText(message: SDKMessage, previousOutput: string): string {
+  const candidate = message as {
+    content?: unknown;
+    message?: unknown;
+    result?: unknown;
   };
+  if (typeof candidate.result === 'string') {
+    return candidate.result;
+  }
+  if (typeof candidate.message === 'string') {
+    return candidate.message;
+  }
+  if (typeof candidate.content === 'string') {
+    return candidate.content;
+  }
+  return previousOutput;
 }

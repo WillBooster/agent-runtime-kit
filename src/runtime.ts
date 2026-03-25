@@ -1,24 +1,17 @@
-export type RuntimeProvider = 'agent-sdk' | 'codex-sdk';
+export const SUPPORTED_RUNTIME_PROVIDERS = ['codex-sdk', 'agent-sdk'] as const;
+
+export type RuntimeProvider = (typeof SUPPORTED_RUNTIME_PROVIDERS)[number];
 
 export type RuntimeTaskRequest = {
   cwd: string;
   env?: NodeJS.ProcessEnv;
   instructions: string;
-  metadata?: Record<string, string | undefined>;
 };
 
 export type RuntimeTaskResult = {
-  exitCode: number;
   outputText: string;
   provider: RuntimeProvider;
   raw?: unknown;
-};
-
-export type RuntimeAdapter<Request, Response> = {
-  execute: (request: Request) => Promise<Response>;
-  mapRequest: (request: RuntimeTaskRequest) => Request;
-  mapResponse: (response: Response) => RuntimeTaskResult;
-  provider: RuntimeProvider;
 };
 
 export type RuntimeClient = {
@@ -26,12 +19,18 @@ export type RuntimeClient = {
   run: (request: RuntimeTaskRequest) => Promise<RuntimeTaskResult>;
 };
 
-export function createRuntimeClient<Request, Response>(adapter: RuntimeAdapter<Request, Response>): RuntimeClient {
+export function createRuntimeClient(
+  provider: RuntimeProvider,
+  execute: (request: RuntimeTaskRequest) => Promise<Omit<RuntimeTaskResult, 'provider'>>
+): RuntimeClient {
   return {
-    provider: adapter.provider,
+    provider,
     run: async (request) => {
-      const response = await adapter.execute(adapter.mapRequest(request));
-      return adapter.mapResponse(response);
+      const response = await execute(request);
+      return {
+        ...response,
+        provider,
+      };
     },
   };
 }

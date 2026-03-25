@@ -1,27 +1,43 @@
 import { expect, test } from 'bun:test';
-import { createAgentRuntime, createCodexRuntime, runRuntimeTask } from '../src/index.js';
+import {
+  createAgentRuntime,
+  createCodexRuntime,
+  type RuntimeProvider,
+  runRuntimeTask,
+  SUPPORTED_RUNTIME_PROVIDERS,
+} from '../src/index.js';
 
-test('wraps codex and agent runtimes behind one interface', async () => {
-  const codexRuntime = createCodexRuntime(async (request) => ({
-    exitCode: 0,
-    outputText: `codex:${request.prompt}`,
-  }));
-  const agentRuntime = createAgentRuntime(async (request) => ({
-    exitCode: 0,
-    outputText: `agent:${request.task}`,
-  }));
+for (const provider of SUPPORTED_RUNTIME_PROVIDERS) {
+  test(`wraps ${provider} behind one interface`, async () => {
+    const runtime = createRuntime(provider);
+    const result = await runRuntimeTask(runtime, {
+      cwd: process.cwd(),
+      instructions: 'hello',
+    });
 
-  const codexResult = await runRuntimeTask(codexRuntime, {
-    cwd: process.cwd(),
-    instructions: 'hello',
+    expect(result.provider).toBe(provider);
+    expect(result.outputText).toBe(`${provider}:hello`);
   });
-  const agentResult = await runRuntimeTask(agentRuntime, {
-    cwd: process.cwd(),
-    instructions: 'world',
-  });
+}
 
-  expect(codexResult.provider).toBe('codex-sdk');
-  expect(codexResult.outputText).toBe('codex:hello');
-  expect(agentResult.provider).toBe('agent-sdk');
-  expect(agentResult.outputText).toBe('agent:world');
-});
+function createRuntime(provider: RuntimeProvider) {
+  if (provider === 'agent-sdk') {
+    return createAgentRuntime({
+      queryFn: async function* query() {
+        yield { result: 'agent-sdk:hello' } as never;
+      },
+    });
+  }
+
+  return createCodexRuntime({
+    client: {
+      startThread() {
+        return {
+          run: async () => ({
+            finalResponse: 'codex-sdk:hello',
+          }),
+        };
+      },
+    } as never,
+  });
+}
