@@ -26,7 +26,7 @@
     "lint-fix": "bun --bun wb lint --fix",
     "prepare": "lefthook install || true",
     "prepublishOnly": "bun run build",
-    "release": "node node_modules/semantic-release/bin/semantic-release.js",
+    "release": "semantic-release",
     "test": "bun test && bun wb test",
     "test:e2e-github": "bun test test/e2e/github-pr.test.ts",
     "typecheck": "bun --bun wb typecheck"
