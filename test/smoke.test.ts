@@ -1,19 +1,27 @@
 import { expect, test } from 'bun:test';
+import { createAgentRuntime, createCodexRuntime, runRuntimeTask } from '../src/index.js';
 
-test('runs the entrypoint with Bun', async () => {
-  const process = Bun.spawn(['bun', 'run', 'src/index.ts'], {
-    cwd: `${import.meta.dir}/..`,
-    stderr: 'pipe',
-    stdout: 'pipe',
+test('wraps codex and agent runtimes behind one interface', async () => {
+  const codexRuntime = createCodexRuntime(async (request) => ({
+    exitCode: 0,
+    outputText: `codex:${request.prompt}`,
+  }));
+  const agentRuntime = createAgentRuntime(async (request) => ({
+    exitCode: 0,
+    outputText: `agent:${request.task}`,
+  }));
+
+  const codexResult = await runRuntimeTask(codexRuntime, {
+    cwd: process.cwd(),
+    instructions: 'hello',
+  });
+  const agentResult = await runRuntimeTask(agentRuntime, {
+    cwd: process.cwd(),
+    instructions: 'world',
   });
 
-  const [stdout, stderr, exitCode] = await Promise.all([
-    new Response(process.stdout).text(),
-    new Response(process.stderr).text(),
-    process.exited,
-  ]);
-
-  expect(exitCode).toBe(0);
-  expect(stderr).toBe('');
-  expect(stdout).toContain('Hello via Bun!');
+  expect(codexResult.provider).toBe('codex-sdk');
+  expect(codexResult.outputText).toBe('codex:hello');
+  expect(agentResult.provider).toBe('agent-sdk');
+  expect(agentResult.outputText).toBe('agent:world');
 });

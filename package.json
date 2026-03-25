@@ -15,6 +15,7 @@
     "lint-fix": "bun --bun wb lint --fix",
     "prepare": "lefthook install || true",
     "test": "bun test && bun wb test",
+    "test:e2e-github": "bun test test/e2e/github-pr.test.ts",
     "typecheck": "bun --bun wb typecheck"
   },
   "prettier": "@willbooster/prettier-config",
