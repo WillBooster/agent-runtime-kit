@@ -6,6 +6,5 @@ export {
   type RuntimeProvider,
   type RuntimeTaskRequest,
   type RuntimeTaskResult,
-  runRuntimeTask,
   SUPPORTED_RUNTIME_PROVIDERS,
 } from './runtime.js';

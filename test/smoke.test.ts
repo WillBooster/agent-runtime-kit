@@ -3,14 +3,13 @@ import {
   createAgentRuntime,
   createCodexRuntime,
   type RuntimeProvider,
-  runRuntimeTask,
   SUPPORTED_RUNTIME_PROVIDERS,
 } from '../src/index.js';
 
 for (const provider of SUPPORTED_RUNTIME_PROVIDERS) {
   test(`wraps ${provider} behind one interface`, async () => {
     const runtime = createRuntime(provider);
-    const result = await runRuntimeTask(runtime, {
+    const result = await runtime.run({
       cwd: process.cwd(),
       instructions: 'hello',
     });

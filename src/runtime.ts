@@ -34,7 +34,3 @@ export function createRuntimeClient(
     },
   };
 }
-
-export async function runRuntimeTask(runtime: RuntimeClient, request: RuntimeTaskRequest): Promise<RuntimeTaskResult> {
-  return runtime.run(request);
-}
