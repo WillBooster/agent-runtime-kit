@@ -1,7 +1,10 @@
 {
   "name": "agent-runtime-kit",
   "version": "0.0.0-semantically-released",
-  "repository": "github:WillBooster/agent-runtime-kit",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WillBooster/agent-runtime-kit.git"
+  },
   "license": "Apache-2.0",
   "author": "WillBooster Inc.",
   "type": "module",
@@ -17,7 +20,7 @@
     "dist/"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "build-ts lib",
     "check-all-for-ai": "bun run check-for-ai && bun run test --silent",
     "check-for-ai": "bun install > /dev/null && bun run cleanup && bun run typecheck",
     "cleanup": "bun --bun wb lint --fix --format",
@@ -42,6 +45,7 @@
     "@willbooster/biome-config": "3.2.5",
     "@willbooster/prettier-config": "10.2.4",
     "@willbooster/wb": "13.4.2",
+    "build-ts": "^17.0.22",
     "conventional-changelog-conventionalcommits": "9.3.0",
     "lefthook": "2.1.4",
     "prettier": "3.8.1",
@@ -51,9 +55,10 @@
     "typescript": "5.9.3"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "tag": "latest"
   }
 }
