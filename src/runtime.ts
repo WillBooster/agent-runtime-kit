@@ -53,13 +53,7 @@ export function createRuntimeClient(
 ): RuntimeClient {
   return {
     provider,
-    run: async (request) => {
-      const response = await execute.run(request);
-      return {
-        ...response,
-        provider,
-      };
-    },
+    run: async (request) => withProvider(provider, await execute.run(request)),
     resumeSession: async (request) => createRuntimeSession(provider, await execute.resumeSession(request)),
     startSession: async (context) => createRuntimeSession(provider, await execute.startSession(context)),
   };
@@ -74,12 +68,13 @@ function createRuntimeSession(provider: RuntimeProvider, session: RuntimeSession
     close: async () => {
       await session.close?.();
     },
-    run: async (request) => {
-      const response = await session.run(request);
-      return {
-        ...response,
-        provider,
-      };
-    },
+    run: async (request) => withProvider(provider, await session.run(request)),
+  };
+}
+
+function withProvider(provider: RuntimeProvider, response: Omit<RuntimeTaskResult, 'provider'>): RuntimeTaskResult {
+  return {
+    ...response,
+    provider,
   };
 }
