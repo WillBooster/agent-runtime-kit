@@ -55,11 +55,9 @@ async function askForRandomNumber(
   providerName: string
 ): Promise<number> {
   const result = await session.run({
-    instructions: [
-      'Print only one random integer between 100 and 999.',
-      'Do not include any words, punctuation, explanation, markdown, or code fences.',
-      'Your full response must be digits only.',
-    ].join(' '),
+    instructions: `Print only one random integer between 100 and 999.
+Do not include any words, punctuation, explanation, markdown, or code fences.
+Your full response must be digits only.`,
   });
   return parseInteger(result.outputText, `${providerName} random number`);
 }
@@ -70,11 +68,9 @@ async function askForSum(
   providerName: string
 ): Promise<number> {
   const result = await session.run({
-    instructions: [
-      `Print only the summation of your previous printed integer and ${otherValue}.`,
-      'Do not include any words, punctuation, explanation, markdown, or code fences.',
-      'Your full response must be digits only.',
-    ].join(' '),
+    instructions: `Print only the summation of your previous printed integer and ${otherValue}.
+Do not include any words, punctuation, explanation, markdown, or code fences.
+Your full response must be digits only.`,
   });
   return parseInteger(result.outputText, `${providerName} summation`);
 }

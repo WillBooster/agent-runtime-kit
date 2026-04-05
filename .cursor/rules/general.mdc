@@ -1,3 +1,9 @@
+---
+description: General Coding Rules
+globs:
+alwaysApply: true
+---
+
 ## Project Information
 
 - Name: `agent-runtime-kit`
@@ -15,7 +21,7 @@
   - If you are confident your changes will not break any tests, you may use `check-for-ai`.
 - Once you have verified your changes, commit and push them to the current (non-main) branch then create a PR via `gh`.
   - Follow the conventional commits; your commit message should start with `feat:`, `fix:`, etc.
-  - If not specified, make sure to add a new line at the end of your commit message with: `Co-authored-by: WillBooster (Claude Code) <agent@willbooster.com>`.
+  - If not specified, make sure to add a new line at the end of your commit message with: `Co-authored-by: WillBooster (Cursor) <agent@willbooster.com>`.
   - Always create new commits. Avoid using `--amend`.
 
 ## Coding Style
