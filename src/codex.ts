@@ -88,7 +88,7 @@ function formatRunResult(result: RunResult): { outputText: string; raw: RunResul
 }
 
 function getValidSessionId(sessionId: string | null | undefined): string | undefined {
-  if (typeof sessionId === 'string' && sessionId.trim().length > 0) {
+  if (typeof sessionId === 'string' && sessionId.trim()) {
     return sessionId;
   }
 

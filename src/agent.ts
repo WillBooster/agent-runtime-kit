@@ -116,7 +116,7 @@ function getLatestSessionId(message: SDKMessage, previousSessionId: string | und
   const candidate = message as {
     session_id?: unknown;
   };
-  if (candidate && typeof candidate.session_id === 'string' && candidate.session_id.trim().length > 0) {
+  if (candidate && typeof candidate.session_id === 'string' && candidate.session_id.trim()) {
     return candidate.session_id;
   }
   return previousSessionId;
