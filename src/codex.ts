@@ -16,9 +16,9 @@ export type CodexRuntimeOptions = {
 
 export function createCodexRuntime(options: CodexRuntimeOptions = {}): RuntimeClient {
   return createRuntimeClient('codex-sdk', {
-    resumeSession: async (request) => createCodexSession(request, options),
-    run: async (request) => runCodexTask(request, options),
-    startSession: async (context) => createCodexSession(context, options),
+    resumeSession: (request) => createCodexSession(request, options),
+    run: (request) => runCodexTask(request, options),
+    startSession: (context) => createCodexSession(context, options),
   });
 }
 

@@ -17,12 +17,9 @@ export type AgentRuntimeOptions = {
 
 export function createAgentRuntime(options: AgentRuntimeOptions = {}): RuntimeClient {
   return createRuntimeClient('agent-sdk', {
-    resumeSession: async (request) => createAgentSession(request, options),
-    run: async (request) => {
-      const { outputText, raw } = await runAgentTask(request, options);
-      return { outputText, raw };
-    },
-    startSession: async (context) => createAgentSession(context, options),
+    resumeSession: (request) => createAgentSession(request, options),
+    run: (request) => runAgentTask(request, options),
+    startSession: (context) => createAgentSession(context, options),
   });
 }
 
@@ -44,10 +41,7 @@ async function createAgentSession(
         sessionId
       );
       sessionId = result.sessionId;
-      return {
-        outputText: result.outputText,
-        raw: result.raw,
-      };
+      return result;
     },
   };
 }
