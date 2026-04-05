@@ -4,12 +4,12 @@
     "check-pr-ci": {
       "source": "WillBooster/agent-skills",
       "sourceType": "github",
-      "computedHash": "85836df58b66fb3639e1be288cb31f256bdb932ddd2823b2a001d7019f6943b2"
+      "computedHash": "db99e44487c728f8096381166902099315205ab8fa3ddd7e10eab3c90c47c649"
     },
     "complete-pr": {
       "source": "WillBooster/agent-skills",
       "sourceType": "github",
-      "computedHash": "b4061936802724a456f65acaa83595dcf3696bb8901194038e4f97c67bef19a4"
+      "computedHash": "6a949300286b16697cf95ca768f41c4ced6602b61ac4cd579ced55201f110931"
     },
     "fetch-issue": {
       "source": "WillBooster/agent-skills",
@@ -24,7 +24,7 @@
     "fix-bug": {
       "source": "WillBooster/agent-skills",
       "sourceType": "github",
-      "computedHash": "be2d8c23369d396a3994fbcff1d3d1d497a869fde9ebb103cd106cd54a66af3f"
+      "computedHash": "2ea944e8ee089d53aa606b13fd51b27ac0ffd1286ded3fa90ade5e6c0a04d071"
     },
     "manage-pr-review-threads": {
       "source": "WillBooster/agent-skills",
@@ -34,7 +34,7 @@
     "open-pr": {
       "source": "WillBooster/agent-skills",
       "sourceType": "github",
-      "computedHash": "21204f4bf1fc24e8619bd3a9d8e7cbde8471982dde61f9b1d01dab17c33cb2df"
+      "computedHash": "7d40325fd1d0a2a40d0d81d15faa61317ba82e381857fc4ddf50d6cfc5ed705c"
     },
     "plan-issue-claude": {
       "source": "WillBooster/agent-skills",
@@ -91,6 +91,21 @@
       "sourceType": "github",
       "computedHash": "543c3a362741506b34bd402bc44cd853d6cdf5f30ee59840941b50eaa2effb9d"
     },
+    "screenshot-claude": {
+      "source": "WillBooster/agent-skills",
+      "sourceType": "github",
+      "computedHash": "0aa981e0a154a74e5dde26f9fe1dcbbdbd3e615f8e850c2e924305d809f70c20"
+    },
+    "screenshot-codex": {
+      "source": "WillBooster/agent-skills",
+      "sourceType": "github",
+      "computedHash": "82fa143281fe8722058870db56987ac5e996139e1534ab813730c82072ac90e8"
+    },
+    "screenshot-gemini": {
+      "source": "WillBooster/agent-skills",
+      "sourceType": "github",
+      "computedHash": "38d1e43432924fae35cf6854ff67f21b99acf8673194abb910dca6d629b777a3"
+    },
     "simplify-pr-claude": {
       "source": "WillBooster/agent-skills",
       "sourceType": "github",
@@ -109,7 +124,12 @@
     "update-pr": {
       "source": "WillBooster/agent-skills",
       "sourceType": "github",
-      "computedHash": "382a7f81d383d8d563e378fade7dfb45b225c936631498b3782c2d30fd6c5e2e"
+      "computedHash": "0191d9bdc68010c75e3d6f39a969485414c621d7eee1fbbe5bf7cf36777fa05d"
+    },
+    "wbfy": {
+      "source": "WillBooster/agent-skills",
+      "sourceType": "github",
+      "computedHash": "e67449705ec89b00d06bb2fb392bfe4f53f1db7ee35b30a16312379e4b1d8a69"
     }
   }
 }
