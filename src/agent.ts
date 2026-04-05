@@ -76,9 +76,12 @@ async function runAgentTask(
   })) {
     messages.push(message);
     outputText = getLatestOutputText(message, outputText);
-    currentSessionId = getLatestSessionId(message, currentSessionId);
-    if (sessionState) {
-      sessionState.current = currentSessionId;
+    const nextSessionId = getLatestSessionId(message, currentSessionId);
+    if (nextSessionId !== currentSessionId) {
+      currentSessionId = nextSessionId;
+      if (sessionState) {
+        sessionState.current = currentSessionId;
+      }
     }
   }
 
