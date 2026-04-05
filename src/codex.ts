@@ -51,35 +51,8 @@ async function createCodexSession(
   };
 }
 
-function createCodexOptions(request: RuntimeTaskRequest, options: CodexOptions | undefined): CodexOptions | undefined {
-  if (!request.env) {
-    return options;
-  }
-
-  return {
-    ...options,
-    env: normalizeEnv(request.env),
-  };
-}
-
-function normalizeEnv(env: NodeJS.ProcessEnv): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(env).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
-  );
-}
-
 function createCodexThread(request: RuntimeSessionContext | RuntimeSessionResumeRequest, options: CodexRuntimeOptions) {
-  const client =
-    options.client ??
-    new Codex(
-      createCodexOptions(
-        {
-          ...request,
-          instructions: '',
-        },
-        options.clientOptions
-      )
-    );
+  const client = options.client ?? new Codex(createCodexOptions(request.env, options.clientOptions));
   const threadOptions = {
     ...options.threadOptions,
     workingDirectory: request.cwd,
@@ -90,4 +63,24 @@ function createCodexThread(request: RuntimeSessionContext | RuntimeSessionResume
   }
 
   return client.startThread(threadOptions);
+}
+
+function createCodexOptions(
+  env: NodeJS.ProcessEnv | undefined,
+  options: CodexOptions | undefined
+): CodexOptions | undefined {
+  if (!env) {
+    return options;
+  }
+
+  return {
+    ...options,
+    env: normalizeEnv(env),
+  };
+}
+
+function normalizeEnv(env: NodeJS.ProcessEnv): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(env).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+  );
 }
