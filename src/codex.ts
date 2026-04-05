@@ -4,6 +4,7 @@ import {
   type RuntimeClient,
   type RuntimeSessionContext,
   type RuntimeSessionResumeRequest,
+  type RuntimeSessionRunRequest,
   type RuntimeTaskRequest,
 } from './runtime.js';
 
@@ -41,8 +42,8 @@ async function createCodexSession(
 
   return {
     getId: () => thread.id ?? ('sessionId' in request ? request.sessionId : undefined),
-    run: async ({ instructions }: { instructions: string }) => {
-      const result = await thread.run(instructions);
+    run: async (runRequest: RuntimeSessionRunRequest) => {
+      const result = await thread.run(runRequest.instructions);
       return {
         outputText: result.finalResponse,
         raw: result,

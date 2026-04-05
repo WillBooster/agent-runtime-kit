@@ -4,6 +4,7 @@ import {
   type RuntimeClient,
   type RuntimeSessionContext,
   type RuntimeSessionResumeRequest,
+  type RuntimeSessionRunRequest,
   type RuntimeTaskRequest,
 } from './runtime.js';
 
@@ -33,11 +34,11 @@ async function createAgentSession(
 
   return {
     getId: () => sessionId,
-    run: async ({ instructions }: { instructions: string }) => {
+    run: async (runRequest: RuntimeSessionRunRequest) => {
       const result = await runAgentTask(
         {
           ...request,
-          instructions,
+          ...runRequest,
         },
         options,
         sessionId
