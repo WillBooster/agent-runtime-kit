@@ -25,6 +25,32 @@ export function createAgentRuntime(options: AgentRuntimeOptions = {}): RuntimeCl
   });
 }
 
+async function createAgentSession(
+  request: RuntimeSessionContext | RuntimeSessionResumeRequest,
+  options: AgentRuntimeOptions
+) {
+  let sessionId = 'sessionId' in request ? request.sessionId : undefined;
+
+  return {
+    getId: () => sessionId,
+    run: async ({ instructions }: { instructions: string }) => {
+      const result = await runAgentTask(
+        {
+          ...request,
+          instructions,
+        },
+        options,
+        sessionId
+      );
+      sessionId = result.sessionId;
+      return {
+        outputText: result.outputText,
+        raw: result.raw,
+      };
+    },
+  };
+}
+
 async function runAgentTask(
   request: RuntimeTaskRequest,
   options: AgentRuntimeOptions,
@@ -52,32 +78,6 @@ async function runAgentTask(
     outputText,
     raw: messages,
     sessionId: currentSessionId,
-  };
-}
-
-async function createAgentSession(
-  request: RuntimeSessionContext | RuntimeSessionResumeRequest,
-  options: AgentRuntimeOptions
-) {
-  let sessionId = 'sessionId' in request ? request.sessionId : undefined;
-
-  return {
-    getId: () => sessionId,
-    run: async ({ instructions }: { instructions: string }) => {
-      const result = await runAgentTask(
-        {
-          ...request,
-          instructions,
-        },
-        options,
-        sessionId
-      );
-      sessionId = result.sessionId;
-      return {
-        outputText: result.outputText,
-        raw: result.raw,
-      };
-    },
   };
 }
 
