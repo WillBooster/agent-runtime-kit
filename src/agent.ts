@@ -18,7 +18,7 @@ export type AgentRuntimeOptions = {
 export function createAgentRuntime(options: AgentRuntimeOptions = {}): RuntimeClient {
   return createRuntimeClient('agent-sdk', {
     resumeSession: (request) => createAgentSession(request, options),
-    run: (request) => runAgentTask(request, options),
+    run: async (request) => (await runAgentTask(request, options)).response,
     startSession: (context) => createAgentSession(context, options),
   });
 }
@@ -41,7 +41,7 @@ async function createAgentSession(
         sessionId
       );
       sessionId = result.sessionId;
-      return result;
+      return result.response;
     },
   };
 }
@@ -50,7 +50,7 @@ async function runAgentTask(
   request: RuntimeTaskRequest,
   options: AgentRuntimeOptions,
   sessionId?: string
-): Promise<{ outputText: string; raw: SDKMessage[]; sessionId: string | undefined }> {
+): Promise<{ response: { outputText: string; raw: SDKMessage[] }; sessionId: string | undefined }> {
   const messages: SDKMessage[] = [];
   let outputText = '';
   let currentSessionId = sessionId;
@@ -70,8 +70,10 @@ async function runAgentTask(
   }
 
   return {
-    outputText,
-    raw: messages,
+    response: {
+      outputText,
+      raw: messages,
+    },
     sessionId: currentSessionId,
   };
 }
@@ -98,7 +100,7 @@ function getLatestSessionId(message: SDKMessage, previousSessionId: string | und
   const candidate = message as {
     session_id?: unknown;
   };
-  if (typeof candidate.session_id === 'string') {
+  if (candidate && typeof candidate.session_id === 'string') {
     return candidate.session_id;
   }
   return previousSessionId;
