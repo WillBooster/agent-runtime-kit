@@ -2,9 +2,12 @@ export const SUPPORTED_RUNTIME_PROVIDERS = ['codex-sdk', 'agent-sdk'] as const;
 
 export type RuntimeProvider = (typeof SUPPORTED_RUNTIME_PROVIDERS)[number];
 
-export type RuntimeTaskRequest = {
+export type RuntimeSessionContext = {
   cwd: string;
   env?: NodeJS.ProcessEnv;
+};
+
+export type RuntimeTaskRequest = RuntimeSessionContext & {
   instructions: string;
 };
 
@@ -14,23 +17,64 @@ export type RuntimeTaskResult = {
   raw?: unknown;
 };
 
+export type RuntimeSessionRunRequest = Pick<RuntimeTaskRequest, 'instructions'>;
+
+export type RuntimeSessionResumeRequest = RuntimeSessionContext & {
+  sessionId: string;
+};
+
+export type RuntimeSession = {
+  readonly id: string | undefined;
+  readonly provider: RuntimeProvider;
+  close: () => Promise<void>;
+  run: (request: RuntimeSessionRunRequest) => Promise<RuntimeTaskResult>;
+};
+
 export type RuntimeClient = {
   provider: RuntimeProvider;
   run: (request: RuntimeTaskRequest) => Promise<RuntimeTaskResult>;
+  startSession: (context: RuntimeSessionContext) => Promise<RuntimeSession>;
+  resumeSession: (request: RuntimeSessionResumeRequest) => Promise<RuntimeSession>;
+};
+
+type RuntimeSessionExecutor = {
+  close?: () => Promise<void> | void;
+  getId: () => string | undefined;
+  run: (request: RuntimeSessionRunRequest) => Promise<Omit<RuntimeTaskResult, 'provider'>>;
 };
 
 export function createRuntimeClient(
   provider: RuntimeProvider,
-  execute: (request: RuntimeTaskRequest) => Promise<Omit<RuntimeTaskResult, 'provider'>>
+  execute: {
+    resumeSession: (request: RuntimeSessionResumeRequest) => Promise<RuntimeSessionExecutor>;
+    run: (request: RuntimeTaskRequest) => Promise<Omit<RuntimeTaskResult, 'provider'>>;
+    startSession: (context: RuntimeSessionContext) => Promise<RuntimeSessionExecutor>;
+  }
 ): RuntimeClient {
   return {
     provider,
-    run: async (request) => {
-      const response = await execute(request);
-      return {
-        ...response,
-        provider,
-      };
+    run: async (request) => withProvider(provider, await execute.run(request)),
+    resumeSession: async (request) => createRuntimeSession(provider, await execute.resumeSession(request)),
+    startSession: async (context) => createRuntimeSession(provider, await execute.startSession(context)),
+  };
+}
+
+function createRuntimeSession(provider: RuntimeProvider, session: RuntimeSessionExecutor): RuntimeSession {
+  return {
+    get id() {
+      return session.getId();
     },
+    provider,
+    close: async () => {
+      await session.close?.();
+    },
+    run: async (request) => withProvider(provider, await session.run(request)),
+  };
+}
+
+function withProvider(provider: RuntimeProvider, response: Omit<RuntimeTaskResult, 'provider'>): RuntimeTaskResult {
+  return {
+    ...response,
+    provider,
   };
 }
