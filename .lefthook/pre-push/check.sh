@@ -1,1 +1,1 @@
-bun run typecheck
+bun --bun wb typecheck
