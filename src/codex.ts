@@ -28,10 +28,7 @@ async function runCodexTask(
 ): Promise<{ outputText: string; raw: RunResult }> {
   const thread = createCodexThread(request, options);
   const result = await thread.run(request.instructions);
-  return {
-    outputText: result.finalResponse,
-    raw: result,
-  };
+  return formatRunResult(result);
 }
 
 async function createCodexSession(
@@ -44,10 +41,7 @@ async function createCodexSession(
     getId: () => getValidSessionId(thread.id) ?? ('sessionId' in request ? request.sessionId : undefined),
     run: async (runRequest: RuntimeSessionRunRequest) => {
       const result = await thread.run(runRequest.instructions);
-      return {
-        outputText: result.finalResponse,
-        raw: result,
-      };
+      return formatRunResult(result);
     },
   };
 }
@@ -84,6 +78,13 @@ function normalizeEnv(env: NodeJS.ProcessEnv): Record<string, string> {
   return Object.fromEntries(
     Object.entries(env).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
   );
+}
+
+function formatRunResult(result: RunResult): { outputText: string; raw: RunResult } {
+  return {
+    outputText: result.finalResponse,
+    raw: result,
+  };
 }
 
 function getValidSessionId(sessionId: string | null | undefined): string | undefined {
