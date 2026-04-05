@@ -41,8 +41,9 @@ async function createAgentSession(
       try {
         const result = await runAgentTask(
           {
-            ...request,
-            ...runRequest,
+            cwd: request.cwd,
+            env: request.env,
+            instructions: runRequest.instructions,
           },
           options,
           sessionState
