@@ -15,6 +15,10 @@ export type AgentRuntimeOptions = {
   sdkOptions?: Omit<Options, 'cwd' | 'env'>;
 };
 
+type AgentSessionState = {
+  current: string | undefined;
+};
+
 export function createAgentRuntime(options: AgentRuntimeOptions = {}): RuntimeClient {
   return createRuntimeClient('agent-sdk', {
     resumeSession: (request) => createAgentSession(request, options),
@@ -32,16 +36,21 @@ async function createAgentSession(
   return {
     getId: () => sessionId,
     run: async (runRequest: RuntimeSessionRunRequest) => {
-      const result = await runAgentTask(
-        {
-          ...request,
-          ...runRequest,
-        },
-        options,
-        sessionId
-      );
-      sessionId = result.sessionId;
-      return result.response;
+      const sessionState: AgentSessionState = { current: sessionId };
+
+      try {
+        const result = await runAgentTask(
+          {
+            ...request,
+            ...runRequest,
+          },
+          options,
+          sessionState
+        );
+        return result.response;
+      } finally {
+        sessionId = sessionState.current;
+      }
     },
   };
 }
@@ -49,11 +58,11 @@ async function createAgentSession(
 async function runAgentTask(
   request: RuntimeTaskRequest,
   options: AgentRuntimeOptions,
-  sessionId?: string
+  sessionState?: AgentSessionState
 ): Promise<{ response: { outputText: string; raw: SDKMessage[] }; sessionId: string | undefined }> {
   const messages: SDKMessage[] = [];
   let outputText = '';
-  let currentSessionId = sessionId;
+  let currentSessionId = sessionState?.current;
 
   for await (const message of (options.queryFn ?? query)({
     prompt: request.instructions,
@@ -61,12 +70,15 @@ async function runAgentTask(
       ...options.sdkOptions,
       cwd: request.cwd,
       env: request.env,
-      resume: sessionId,
+      resume: currentSessionId,
     },
   })) {
     messages.push(message);
     outputText = getLatestOutputText(message, outputText);
     currentSessionId = getLatestSessionId(message, currentSessionId);
+    if (sessionState) {
+      sessionState.current = currentSessionId;
+    }
   }
 
   return {
