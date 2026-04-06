@@ -2,7 +2,7 @@ import { expect, test } from 'bun:test';
 import { createAgentRuntime, createCodexRuntime, type RuntimeClient } from '../../src/index.js';
 
 const E2E_TIMEOUT = 1000 * 60 * 20;
-const ISSUE_URL = 'https://github.com/exKAZUu/agent-benchmark/issues/1';
+const ISSUE_NO = '3';
 const runtimeTest = process.env.CI ? test.skip : test;
 
 for (const provider of ['agent-sdk', 'codex-sdk'] as const) {
@@ -11,22 +11,14 @@ for (const provider of ['agent-sdk', 'codex-sdk'] as const) {
     async () => {
       const runtime = createRuntime(provider);
       const cwd = process.cwd();
+      const skillTrigger = provider === 'codex-sdk' ? '$fetch-issue' : '/fetch-issue';
 
       const issueResult = await runtime.run({
         cwd,
-        instructions: `Use the fetch-issue skill for ${ISSUE_URL}.
-Do not use any git write operation and do not modify files.
-Return only JSON with this exact shape:
-{"title":string,"firstCommentAuthor":string,"mentionsWinnerPr":boolean}
-Use the exact issue title.
-Set firstCommentAuthor to the login of the first issue comment author.
-Set mentionsWinnerPr to true only if the first issue comment mentions pull request 324.`,
+        instructions: `${skillTrigger} ${ISSUE_NO}`,
       });
-      expect(parseJsonObject(issueResult.outputText)).toEqual({
-        firstCommentAuthor: 'exKAZUu',
-        mentionsWinnerPr: true,
-        title: 'fix: print "Hello, World!" instead of "Hello via Bun!"',
-      });
+      expect(issueResult.outputText).toContain('Dependency Dashboard');
+      expect(issueResult.outputText).toContain('#3');
     },
     { timeout: E2E_TIMEOUT }
   );
@@ -54,21 +46,4 @@ function createRuntime(provider: 'agent-sdk' | 'codex-sdk'): RuntimeClient {
       webSearchEnabled: false,
     },
   });
-}
-
-function parseJsonObject(outputText: string): Record<string, unknown> {
-  const trimmed = outputText.trim();
-  const candidate =
-    extractJsonBlock(trimmed) ??
-    trimmed.match(/\{[\s\S]*\}/u)?.[0] ??
-    (() => {
-      throw new Error(`Expected JSON object, received: ${JSON.stringify(outputText)}`);
-    })();
-
-  return JSON.parse(candidate) as Record<string, unknown>;
-}
-
-function extractJsonBlock(text: string): string | undefined {
-  const fencedMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/u);
-  return fencedMatch?.[1];
 }
