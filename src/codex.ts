@@ -65,47 +65,6 @@ async function createCodexSession(
   };
 }
 
-function createCodexThread(request: RuntimeSessionContext | RuntimeSessionResumeRequest, options: CodexRuntimeOptions) {
-  const client = options.client ?? new Codex(createCodexOptions(request.env, options.clientOptions));
-  const threadOptions = {
-    ...options.threadOptions,
-    workingDirectory: request.cwd,
-  };
-
-  if ('sessionId' in request) {
-    return client.resumeThread(request.sessionId, threadOptions);
-  }
-
-  return client.startThread(threadOptions);
-}
-
-function createCodexOptions(
-  env: NodeJS.ProcessEnv | undefined,
-  options: CodexOptions | undefined
-): CodexOptions | undefined {
-  if (!env) {
-    return options;
-  }
-
-  return {
-    ...options,
-    env: normalizeEnv(env),
-  };
-}
-
-function normalizeEnv(env: NodeJS.ProcessEnv): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(env).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
-  );
-}
-
-function formatRunResult(result: RunResult): { outputText: string; raw: RunResult } {
-  return {
-    outputText: result.finalResponse,
-    raw: result,
-  };
-}
-
 async function collectCodexRunResult(
   streamedResultPromise: Promise<RunStreamedResult>,
   options: CodexRunOptions | undefined
@@ -182,6 +141,47 @@ function applyCodexEvent(
   return {
     outputText: previousOutputText,
     usage: previousUsage,
+  };
+}
+
+function createCodexThread(request: RuntimeSessionContext | RuntimeSessionResumeRequest, options: CodexRuntimeOptions) {
+  const client = options.client ?? new Codex(createCodexOptions(request.env, options.clientOptions));
+  const threadOptions = {
+    ...options.threadOptions,
+    workingDirectory: request.cwd,
+  };
+
+  if ('sessionId' in request) {
+    return client.resumeThread(request.sessionId, threadOptions);
+  }
+
+  return client.startThread(threadOptions);
+}
+
+function createCodexOptions(
+  env: NodeJS.ProcessEnv | undefined,
+  options: CodexOptions | undefined
+): CodexOptions | undefined {
+  if (!env) {
+    return options;
+  }
+
+  return {
+    ...options,
+    env: normalizeEnv(env),
+  };
+}
+
+function normalizeEnv(env: NodeJS.ProcessEnv): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(env).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+  );
+}
+
+function formatRunResult(result: RunResult): { outputText: string; raw: RunResult } {
+  return {
+    outputText: result.finalResponse,
+    raw: result,
   };
 }
 
