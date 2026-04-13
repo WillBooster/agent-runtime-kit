@@ -117,7 +117,7 @@ async function collectCodexRunResult(
   let usage: RunResult['usage'] = null;
 
   for await (const event of streamedResult.events) {
-    if (logs && matchesCodexEventFilter(event, options)) {
+    if (logs && (options?.eventFilter?.(event) ?? true)) {
       logs.push(event);
     }
     const state = applyCodexEvent(itemsById, outputText, usage, event);
@@ -152,14 +152,10 @@ async function* streamCodexEvents(
 ): AsyncIterable<ThreadEvent> {
   const streamedResult = await streamedResultPromise;
   for await (const event of streamedResult.events) {
-    if (matchesCodexEventFilter(event, options)) {
+    if (options?.eventFilter?.(event) ?? true) {
       yield event;
     }
   }
-}
-
-function matchesCodexEventFilter(event: ThreadEvent, options: CodexRunOptions | undefined): boolean {
-  return options?.eventFilter?.(event) ?? true;
 }
 
 function applyCodexEvent(

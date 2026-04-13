@@ -90,7 +90,7 @@ async function runAgentTask(
   for await (const message of iterateAgentMessages(request, options, sessionState, runOptions)) {
     messages.push(message);
     outputText = getLatestOutputText(message, outputText);
-    if (logs && matchesAgentLogFilter(message, runOptions)) {
+    if (logs && (runOptions?.logFilter?.(message) ?? true)) {
       logs.push(message);
     }
   }
@@ -112,7 +112,7 @@ async function* streamAgentTask(
   runOptions?: AgentRunOptions
 ): AsyncIterable<SDKMessage> {
   for await (const message of iterateAgentMessages(request, options, sessionState, runOptions)) {
-    if (matchesAgentLogFilter(message, runOptions)) {
+    if (runOptions?.logFilter?.(message) ?? true) {
       yield message;
     }
   }
@@ -145,10 +145,6 @@ async function* iterateAgentMessages(
     }
     yield message;
   }
-}
-
-function matchesAgentLogFilter(message: SDKMessage, options: AgentRunOptions | undefined): boolean {
-  return options?.logFilter?.(message) ?? true;
 }
 
 function getLatestOutputText(message: SDKMessage, previousOutput: string): string {
