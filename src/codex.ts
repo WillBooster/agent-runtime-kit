@@ -59,9 +59,9 @@ async function createCodexSession(
   return {
     getId: () => getValidSessionId(thread.id) ?? ('sessionId' in request ? request.sessionId : undefined),
     run: (runRequest: RuntimeSessionRunRequest, runOptions?: CodexRunOptions) =>
-      collectCodexRunResult(awaitThreadRunStreamed(thread, runRequest.instructions, runOptions), runOptions),
+      collectCodexRunResult(thread.runStreamed(runRequest.instructions, runOptions?.turnOptions), runOptions),
     runStream: (runRequest: RuntimeSessionRunRequest, runOptions?: CodexRunOptions) =>
-      streamCodexEvents(awaitThreadRunStreamed(thread, runRequest.instructions, runOptions), runOptions),
+      streamCodexEvents(thread.runStreamed(runRequest.instructions, runOptions?.turnOptions), runOptions),
   };
 }
 
@@ -156,14 +156,6 @@ async function* streamCodexEvents(
       yield event;
     }
   }
-}
-
-function awaitThreadRunStreamed(
-  thread: ReturnType<typeof createCodexThread>,
-  instructions: string,
-  options?: CodexRunOptions
-) {
-  return thread.runStreamed(instructions, options?.turnOptions);
 }
 
 function matchesCodexEventFilter(event: ThreadEvent, options: CodexRunOptions | undefined): boolean {
