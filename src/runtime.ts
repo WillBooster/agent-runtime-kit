@@ -11,11 +11,14 @@ export type RuntimeTaskRequest = RuntimeSessionContext & {
   instructions: string;
 };
 
-export type RuntimeTaskResult = {
+export type RuntimeTaskResult<TRaw = unknown, TLog = unknown> = {
   outputText: string;
   provider: RuntimeProvider;
-  raw?: unknown;
+  raw?: TRaw;
+  logs?: TLog[];
 };
+
+type RuntimeTaskResultWithoutProvider<TRaw, TLog> = Omit<RuntimeTaskResult<TRaw, TLog>, 'provider'>;
 
 export type RuntimeSessionRunRequest = Pick<RuntimeTaskRequest, 'instructions'>;
 
@@ -23,43 +26,62 @@ export type RuntimeSessionResumeRequest = RuntimeSessionContext & {
   sessionId: string;
 };
 
-export type RuntimeSession = {
+export type RuntimeSession<
+  TRunOptions = undefined,
+  TResult extends RuntimeTaskResult = RuntimeTaskResult,
+  TLog = unknown,
+> = {
   readonly id: string | undefined;
   readonly provider: RuntimeProvider;
   close: () => Promise<void>;
-  run: (request: RuntimeSessionRunRequest) => Promise<RuntimeTaskResult>;
+  run: (request: RuntimeSessionRunRequest, options?: TRunOptions) => Promise<TResult>;
+  runStream: (request: RuntimeSessionRunRequest, options?: TRunOptions) => AsyncIterable<TLog>;
 };
 
-export type RuntimeClient = {
+export type RuntimeClient<
+  TRunOptions = undefined,
+  TResult extends RuntimeTaskResult = RuntimeTaskResult,
+  TLog = unknown,
+> = {
   provider: RuntimeProvider;
-  run: (request: RuntimeTaskRequest) => Promise<RuntimeTaskResult>;
-  startSession: (context: RuntimeSessionContext) => Promise<RuntimeSession>;
-  resumeSession: (request: RuntimeSessionResumeRequest) => Promise<RuntimeSession>;
+  run: (request: RuntimeTaskRequest, options?: TRunOptions) => Promise<TResult>;
+  runStream: (request: RuntimeTaskRequest, options?: TRunOptions) => AsyncIterable<TLog>;
+  startSession: (context: RuntimeSessionContext) => Promise<RuntimeSession<TRunOptions, TResult, TLog>>;
+  resumeSession: (request: RuntimeSessionResumeRequest) => Promise<RuntimeSession<TRunOptions, TResult, TLog>>;
 };
 
-type RuntimeSessionExecutor = {
+type RuntimeSessionExecutor<TRunOptions, TRaw, TLog> = {
   close?: () => Promise<void> | void;
   getId: () => string | undefined;
-  run: (request: RuntimeSessionRunRequest) => Promise<Omit<RuntimeTaskResult, 'provider'>>;
+  run: (
+    request: RuntimeSessionRunRequest,
+    options?: TRunOptions
+  ) => Promise<RuntimeTaskResultWithoutProvider<TRaw, TLog>>;
+  runStream: (request: RuntimeSessionRunRequest, options?: TRunOptions) => AsyncIterable<TLog>;
 };
 
-export function createRuntimeClient(
+export function createRuntimeClient<TRunOptions = undefined, TRaw = unknown, TLog = unknown>(
   provider: RuntimeProvider,
   execute: {
-    resumeSession: (request: RuntimeSessionResumeRequest) => Promise<RuntimeSessionExecutor>;
-    run: (request: RuntimeTaskRequest) => Promise<Omit<RuntimeTaskResult, 'provider'>>;
-    startSession: (context: RuntimeSessionContext) => Promise<RuntimeSessionExecutor>;
+    resumeSession: (request: RuntimeSessionResumeRequest) => Promise<RuntimeSessionExecutor<TRunOptions, TRaw, TLog>>;
+    run: (request: RuntimeTaskRequest, options?: TRunOptions) => Promise<RuntimeTaskResultWithoutProvider<TRaw, TLog>>;
+    runStream: (request: RuntimeTaskRequest, options?: TRunOptions) => AsyncIterable<TLog>;
+    startSession: (context: RuntimeSessionContext) => Promise<RuntimeSessionExecutor<TRunOptions, TRaw, TLog>>;
   }
-): RuntimeClient {
+): RuntimeClient<TRunOptions, RuntimeTaskResult<TRaw, TLog>, TLog> {
   return {
     provider,
-    run: async (request) => withProvider(provider, await execute.run(request)),
+    run: async (request, options) => withProvider(provider, await execute.run(request, options)),
+    runStream: (request, options) => execute.runStream(request, options),
     resumeSession: async (request) => createRuntimeSession(provider, await execute.resumeSession(request)),
     startSession: async (context) => createRuntimeSession(provider, await execute.startSession(context)),
   };
 }
 
-function createRuntimeSession(provider: RuntimeProvider, session: RuntimeSessionExecutor): RuntimeSession {
+function createRuntimeSession<TRunOptions, TRaw, TLog>(
+  provider: RuntimeProvider,
+  session: RuntimeSessionExecutor<TRunOptions, TRaw, TLog>
+): RuntimeSession<TRunOptions, RuntimeTaskResult<TRaw, TLog>, TLog> {
   return {
     get id() {
       return session.getId();
@@ -68,11 +90,15 @@ function createRuntimeSession(provider: RuntimeProvider, session: RuntimeSession
     close: async () => {
       await session.close?.();
     },
-    run: async (request) => withProvider(provider, await session.run(request)),
+    run: async (request, options) => withProvider(provider, await session.run(request, options)),
+    runStream: (request, options) => session.runStream(request, options),
   };
 }
 
-function withProvider(provider: RuntimeProvider, response: Omit<RuntimeTaskResult, 'provider'>): RuntimeTaskResult {
+function withProvider<TRaw, TLog>(
+  provider: RuntimeProvider,
+  response: Omit<RuntimeTaskResult<TRaw, TLog>, 'provider'>
+): RuntimeTaskResult<TRaw, TLog> {
   return {
     ...response,
     provider,

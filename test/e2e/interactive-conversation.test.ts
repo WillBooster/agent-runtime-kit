@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { createAgentRuntime, createCodexRuntime, type RuntimeSession } from '../../src/index.js';
+import { createAgentRuntime, createCodexRuntime } from '../../src/index.js';
 
 const E2E_TIMEOUT = 1000 * 60 * 20;
 const runtimeTest = process.env.CI ? test.skip : test;
@@ -50,7 +50,11 @@ runtimeTest(
   { timeout: E2E_TIMEOUT }
 );
 
-async function askForRandomNumber(session: RuntimeSession, providerName: string): Promise<number> {
+type SessionLike = {
+  run: (request: { instructions: string }) => Promise<{ outputText: string }>;
+};
+
+async function askForRandomNumber(session: SessionLike, providerName: string): Promise<number> {
   const result = await session.run({
     instructions: `Print only one random integer between 100 and 999.
 Do not include any words, punctuation, explanation, markdown, or code fences.
@@ -59,7 +63,7 @@ Your full response must be digits only.`,
   return parseInteger(result.outputText, `${providerName} random number`);
 }
 
-async function askForSum(session: RuntimeSession, otherValue: number, providerName: string): Promise<number> {
+async function askForSum(session: SessionLike, otherValue: number, providerName: string): Promise<number> {
   const result = await session.run({
     instructions: `Print only the summation of your previous printed integer and ${otherValue}.
 Do not include any words, punctuation, explanation, markdown, or code fences.

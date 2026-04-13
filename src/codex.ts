@@ -1,11 +1,21 @@
-import { Codex, type CodexOptions, type RunResult, type ThreadOptions } from '@openai/codex-sdk';
+import {
+  Codex,
+  type CodexOptions,
+  type RunResult,
+  type RunStreamedResult,
+  type ThreadEvent,
+  type ThreadOptions,
+  type TurnOptions,
+} from '@openai/codex-sdk';
 import {
   createRuntimeClient,
   type RuntimeClient,
+  type RuntimeSession,
   type RuntimeSessionContext,
   type RuntimeSessionResumeRequest,
   type RuntimeSessionRunRequest,
   type RuntimeTaskRequest,
+  type RuntimeTaskResult,
 } from './runtime.js';
 
 export type CodexRuntimeOptions = {
@@ -14,21 +24,30 @@ export type CodexRuntimeOptions = {
   threadOptions?: Omit<ThreadOptions, 'workingDirectory'>;
 };
 
-export function createCodexRuntime(options: CodexRuntimeOptions = {}): RuntimeClient {
+export type CodexRunOptions = {
+  eventFilter?: (event: ThreadEvent) => boolean;
+  includeLogs?: boolean;
+  turnOptions?: TurnOptions;
+};
+
+export type CodexTaskResult = RuntimeTaskResult<RunResult, ThreadEvent>;
+
+export type CodexRuntimeSession = RuntimeSession<CodexRunOptions, CodexTaskResult, ThreadEvent>;
+
+export type CodexRuntimeClient = RuntimeClient<CodexRunOptions, CodexTaskResult, ThreadEvent>;
+
+export function createCodexRuntime(options: CodexRuntimeOptions = {}): CodexRuntimeClient {
   return createRuntimeClient('codex-sdk', {
     resumeSession: (request) => createCodexSession(request, options),
-    run: (request) => runCodexTask(request, options),
+    run: (request, runOptions) => runCodexTask(request, options, runOptions),
+    runStream: (request, runOptions) => streamCodexTask(request, options, runOptions),
     startSession: (context) => createCodexSession(context, options),
   });
 }
 
-async function runCodexTask(
-  request: RuntimeTaskRequest,
-  options: CodexRuntimeOptions
-): Promise<{ outputText: string; raw: RunResult }> {
+async function runCodexTask(request: RuntimeTaskRequest, options: CodexRuntimeOptions, runOptions?: CodexRunOptions) {
   const thread = createCodexThread(request, options);
-  const result = await thread.run(request.instructions);
-  return formatRunResult(result);
+  return collectCodexRunResult(thread.runStreamed(request.instructions, runOptions?.turnOptions), runOptions);
 }
 
 async function createCodexSession(
@@ -39,10 +58,10 @@ async function createCodexSession(
 
   return {
     getId: () => getValidSessionId(thread.id) ?? ('sessionId' in request ? request.sessionId : undefined),
-    run: async (runRequest: RuntimeSessionRunRequest) => {
-      const result = await thread.run(runRequest.instructions);
-      return formatRunResult(result);
-    },
+    run: (runRequest: RuntimeSessionRunRequest, runOptions?: CodexRunOptions) =>
+      collectCodexRunResult(awaitThreadRunStreamed(thread, runRequest.instructions, runOptions), runOptions),
+    runStream: (runRequest: RuntimeSessionRunRequest, runOptions?: CodexRunOptions) =>
+      streamCodexEvents(awaitThreadRunStreamed(thread, runRequest.instructions, runOptions), runOptions),
   };
 }
 
@@ -84,6 +103,97 @@ function formatRunResult(result: RunResult): { outputText: string; raw: RunResul
   return {
     outputText: result.finalResponse,
     raw: result,
+  };
+}
+
+async function collectCodexRunResult(
+  streamedResultPromise: Promise<RunStreamedResult>,
+  options: CodexRunOptions | undefined
+): Promise<Omit<CodexTaskResult, 'provider'>> {
+  const streamedResult = await streamedResultPromise;
+  const logs: ThreadEvent[] | undefined = options?.includeLogs ? [] : undefined;
+  const itemsById = new Map<string, RunResult['items'][number]>();
+  let outputText = '';
+  let usage: RunResult['usage'] = null;
+
+  for await (const event of streamedResult.events) {
+    if (logs && matchesCodexEventFilter(event, options)) {
+      logs.push(event);
+    }
+    const state = applyCodexEvent(itemsById, outputText, usage, event);
+    outputText = state.outputText;
+    usage = state.usage;
+  }
+
+  const raw: RunResult = {
+    finalResponse: outputText,
+    items: [...itemsById.values()],
+    usage,
+  };
+
+  return {
+    ...(logs ? { logs } : {}),
+    ...formatRunResult(raw),
+  };
+}
+
+async function* streamCodexTask(
+  request: RuntimeTaskRequest,
+  options: CodexRuntimeOptions,
+  runOptions?: CodexRunOptions
+): AsyncIterable<ThreadEvent> {
+  const thread = createCodexThread(request, options);
+  yield* streamCodexEvents(thread.runStreamed(request.instructions, runOptions?.turnOptions), runOptions);
+}
+
+async function* streamCodexEvents(
+  streamedResultPromise: Promise<RunStreamedResult>,
+  options?: CodexRunOptions
+): AsyncIterable<ThreadEvent> {
+  const streamedResult = await streamedResultPromise;
+  for await (const event of streamedResult.events) {
+    if (matchesCodexEventFilter(event, options)) {
+      yield event;
+    }
+  }
+}
+
+function awaitThreadRunStreamed(
+  thread: ReturnType<typeof createCodexThread>,
+  instructions: string,
+  options?: CodexRunOptions
+) {
+  return thread.runStreamed(instructions, options?.turnOptions);
+}
+
+function matchesCodexEventFilter(event: ThreadEvent, options: CodexRunOptions | undefined): boolean {
+  return options?.eventFilter?.(event) ?? true;
+}
+
+function applyCodexEvent(
+  itemsById: Map<string, RunResult['items'][number]>,
+  previousOutputText: string,
+  previousUsage: RunResult['usage'],
+  event: ThreadEvent
+): { outputText: string; usage: RunResult['usage'] } {
+  if (event.type === 'item.started' || event.type === 'item.updated' || event.type === 'item.completed') {
+    itemsById.set(event.item.id, event.item);
+    return {
+      outputText: event.item.type === 'agent_message' ? event.item.text : previousOutputText,
+      usage: previousUsage,
+    };
+  }
+
+  if (event.type === 'turn.completed') {
+    return {
+      outputText: previousOutputText,
+      usage: event.usage,
+    };
+  }
+
+  return {
+    outputText: previousOutputText,
+    usage: previousUsage,
   };
 }
 

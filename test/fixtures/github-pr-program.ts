@@ -1,4 +1,4 @@
-import { createAgentRuntime, createCodexRuntime, type RuntimeClient } from '../../src/index.js';
+import { createAgentRuntime, createCodexRuntime } from '../../src/index.js';
 
 const issueUrl = 'https://github.com/exKAZUu/agent-benchmark/issues/1';
 const provider = process.env.AGENT_RUNTIME_KIT_PROVIDER ?? 'codex-sdk';
@@ -11,7 +11,7 @@ const result = await runtime.run({
 
 process.stdout.write(result.outputText);
 
-function createRuntime(runtimeProvider: string): RuntimeClient {
+function createRuntime(runtimeProvider: string) {
   if (runtimeProvider === 'agent-sdk') {
     return createAgentRuntime({
       sdkOptions: {

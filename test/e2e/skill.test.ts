@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { createAgentRuntime, createCodexRuntime, type RuntimeClient } from '../../src/index.js';
+import { createAgentRuntime, createCodexRuntime } from '../../src/index.js';
 
 const E2E_TIMEOUT = 1000 * 60 * 20;
 const ISSUE_NO = '3';
@@ -24,7 +24,7 @@ for (const provider of ['agent-sdk', 'codex-sdk'] as const) {
   );
 }
 
-function createRuntime(provider: 'agent-sdk' | 'codex-sdk'): RuntimeClient {
+function createRuntime(provider: 'agent-sdk' | 'codex-sdk') {
   if (provider === 'agent-sdk') {
     return createAgentRuntime({
       sdkOptions: {

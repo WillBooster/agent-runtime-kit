@@ -1,5 +1,19 @@
-export { type AgentRuntimeOptions, createAgentRuntime } from './agent.js';
-export { type CodexRuntimeOptions, createCodexRuntime } from './codex.js';
+export {
+  type AgentRunOptions,
+  type AgentRuntimeClient,
+  type AgentRuntimeOptions,
+  type AgentRuntimeSession,
+  type AgentTaskResult,
+  createAgentRuntime,
+} from './agent.js';
+export {
+  type CodexRunOptions,
+  type CodexRuntimeClient,
+  type CodexRuntimeOptions,
+  type CodexRuntimeSession,
+  type CodexTaskResult,
+  createCodexRuntime,
+} from './codex.js';
 export {
   createRuntimeClient,
   type RuntimeClient,
