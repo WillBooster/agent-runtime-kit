@@ -71,22 +71,31 @@ async function collectCodexRunResult(
 ): Promise<Omit<CodexTaskResult, 'provider'>> {
   const streamedResult = await streamedResultPromise;
   const logs: ThreadEvent[] | undefined = options?.includeLogs ? [] : undefined;
-  const itemsById = new Map<string, RunResult['items'][number]>();
+  const items: RunResult['items'] = [];
   let outputText = '';
+  let turnFailure: { message: string } | null = null;
   let usage: RunResult['usage'] = null;
 
   for await (const event of streamedResult.events) {
     if (logs && (options?.eventFilter?.(event) ?? true)) {
       logs.push(event);
     }
-    const state = applyCodexEvent(itemsById, outputText, usage, event);
+    const state = applyCodexEvent(items, outputText, usage, event);
     outputText = state.outputText;
+    turnFailure = state.turnFailure;
     usage = state.usage;
+    if (turnFailure) {
+      break;
+    }
+  }
+
+  if (turnFailure) {
+    throw new Error(turnFailure.message);
   }
 
   const raw: RunResult = {
     finalResponse: outputText,
-    items: [...itemsById.values()],
+    items,
     usage,
   };
 
@@ -118,15 +127,16 @@ async function* streamCodexEvents(
 }
 
 function applyCodexEvent(
-  itemsById: Map<string, RunResult['items'][number]>,
+  items: RunResult['items'],
   previousOutputText: string,
   previousUsage: RunResult['usage'],
   event: ThreadEvent
-): { outputText: string; usage: RunResult['usage'] } {
-  if (event.type === 'item.started' || event.type === 'item.updated' || event.type === 'item.completed') {
-    itemsById.set(event.item.id, event.item);
+): { outputText: string; turnFailure: { message: string } | null; usage: RunResult['usage'] } {
+  if (event.type === 'item.completed') {
+    items.push(event.item);
     return {
       outputText: event.item.type === 'agent_message' ? event.item.text : previousOutputText,
+      turnFailure: null,
       usage: previousUsage,
     };
   }
@@ -134,12 +144,22 @@ function applyCodexEvent(
   if (event.type === 'turn.completed') {
     return {
       outputText: previousOutputText,
+      turnFailure: null,
       usage: event.usage,
+    };
+  }
+
+  if (event.type === 'turn.failed') {
+    return {
+      outputText: previousOutputText,
+      turnFailure: event.error,
+      usage: previousUsage,
     };
   }
 
   return {
     outputText: previousOutputText,
+    turnFailure: null,
     usage: previousUsage,
   };
 }
