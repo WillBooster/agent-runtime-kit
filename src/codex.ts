@@ -73,7 +73,7 @@ async function collectCodexRunResult(
   const logs: ThreadEvent[] | undefined = options?.includeLogs ? [] : undefined;
   const items: RunResult['items'] = [];
   let outputText = '';
-  let turnFailure: { message: string } | null = null;
+  let turnFailure: { message: string } | undefined;
   let usage: RunResult['usage'] = null;
 
   for await (const event of streamedResult.events) {
@@ -131,12 +131,12 @@ function applyCodexEvent(
   previousOutputText: string,
   previousUsage: RunResult['usage'],
   event: ThreadEvent
-): { outputText: string; turnFailure: { message: string } | null; usage: RunResult['usage'] } {
+): { outputText: string; turnFailure: { message: string } | undefined; usage: RunResult['usage'] } {
   if (event.type === 'item.completed') {
     items.push(event.item);
     return {
       outputText: event.item.type === 'agent_message' ? event.item.text : previousOutputText,
-      turnFailure: null,
+      turnFailure: undefined,
       usage: previousUsage,
     };
   }
@@ -144,7 +144,7 @@ function applyCodexEvent(
   if (event.type === 'turn.completed') {
     return {
       outputText: previousOutputText,
-      turnFailure: null,
+      turnFailure: undefined,
       usage: event.usage,
     };
   }
@@ -152,14 +152,14 @@ function applyCodexEvent(
   if (event.type === 'turn.failed') {
     return {
       outputText: previousOutputText,
-      turnFailure: event.error,
+      turnFailure: event.error ?? undefined,
       usage: previousUsage,
     };
   }
 
   return {
     outputText: previousOutputText,
-    turnFailure: null,
+    turnFailure: undefined,
     usage: previousUsage,
   };
 }

@@ -57,7 +57,7 @@ type RuntimeSessionExecutor<TRunOptions, TRaw, TLog> = {
     request: RuntimeSessionRunRequest,
     options?: TRunOptions
   ) => Promise<RuntimeTaskResultWithoutProvider<TRaw, TLog>>;
-  runStream: (request: RuntimeSessionRunRequest, options?: TRunOptions) => AsyncIterable<TLog>;
+  runStream?: (request: RuntimeSessionRunRequest, options?: TRunOptions) => AsyncIterable<TLog>;
 };
 
 export function createRuntimeClient<TRunOptions = never, TRaw = unknown, TLog = unknown>(
@@ -65,14 +65,20 @@ export function createRuntimeClient<TRunOptions = never, TRaw = unknown, TLog = 
   execute: {
     resumeSession: (request: RuntimeSessionResumeRequest) => Promise<RuntimeSessionExecutor<TRunOptions, TRaw, TLog>>;
     run: (request: RuntimeTaskRequest, options?: TRunOptions) => Promise<RuntimeTaskResultWithoutProvider<TRaw, TLog>>;
-    runStream: (request: RuntimeTaskRequest, options?: TRunOptions) => AsyncIterable<TLog>;
+    runStream?: (request: RuntimeTaskRequest, options?: TRunOptions) => AsyncIterable<TLog>;
     startSession: (context: RuntimeSessionContext) => Promise<RuntimeSessionExecutor<TRunOptions, TRaw, TLog>>;
   }
 ): RuntimeClient<TRunOptions, RuntimeTaskResult<TRaw, TLog>, TLog> {
+  let runStream: ((request: RuntimeTaskRequest, options?: TRunOptions) => AsyncIterable<TLog>) | undefined;
+  if (execute.runStream) {
+    const executeRunStream = execute.runStream;
+    runStream = (request, options) => executeRunStream(request, options);
+  }
+
   return {
     provider,
     run: async (request, options) => withProvider(provider, await execute.run(request, options)),
-    runStream: (request, options) => execute.runStream(request, options),
+    runStream,
     resumeSession: async (request) => createRuntimeSession(provider, await execute.resumeSession(request)),
     startSession: async (context) => createRuntimeSession(provider, await execute.startSession(context)),
   };
@@ -82,6 +88,12 @@ function createRuntimeSession<TRunOptions, TRaw, TLog>(
   provider: RuntimeProvider,
   session: RuntimeSessionExecutor<TRunOptions, TRaw, TLog>
 ): RuntimeSession<TRunOptions, RuntimeTaskResult<TRaw, TLog>, TLog> {
+  let runStream: ((request: RuntimeSessionRunRequest, options?: TRunOptions) => AsyncIterable<TLog>) | undefined;
+  if (session.runStream) {
+    const sessionRunStream = session.runStream;
+    runStream = (request, options) => sessionRunStream(request, options);
+  }
+
   return {
     get id() {
       return session.getId();
@@ -91,7 +103,7 @@ function createRuntimeSession<TRunOptions, TRaw, TLog>(
       await session.close?.();
     },
     run: async (request, options) => withProvider(provider, await session.run(request, options)),
-    runStream: (request, options) => session.runStream(request, options),
+    runStream,
   };
 }
 
