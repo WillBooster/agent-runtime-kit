@@ -18,12 +18,34 @@ import { createCodexRuntime } from 'agent-runtime-kit';
 
 const runtime = createCodexRuntime();
 
-const result = await runtime.run({
-  cwd: process.cwd(),
-  instructions: 'Summarize the current repository structure.',
-});
+const result = await runtime.run(
+  {
+    cwd: process.cwd(),
+    instructions: 'Summarize the current repository structure.',
+  },
+  {
+    includeLogs: true,
+  }
+);
 
 console.log(result.outputText);
+console.log(result.logs);
+```
+
+```ts
+const eventFilter = (event: { type: string }) => event.type !== 'turn.started';
+
+for await (const event of runtime.runStream(
+  {
+    cwd: process.cwd(),
+    instructions: 'Summarize the current repository structure.',
+  },
+  {
+    eventFilter,
+  }
+)) {
+  console.log(event);
+}
 ```
 
 ## GitHub E2E

@@ -32,8 +32,25 @@ function createRuntime(provider: RuntimeProvider) {
     client: {
       startThread() {
         return {
-          run: async () => ({
-            finalResponse: 'codex-sdk:hello',
+          runStreamed: async () => ({
+            events: (async function* () {
+              yield {
+                item: {
+                  id: 'message-1',
+                  text: 'codex-sdk:hello',
+                  type: 'agent_message',
+                },
+                type: 'item.completed',
+              };
+              yield {
+                type: 'turn.completed',
+                usage: {
+                  cached_input_tokens: 0,
+                  input_tokens: 0,
+                  output_tokens: 0,
+                },
+              };
+            })(),
           }),
         };
       },

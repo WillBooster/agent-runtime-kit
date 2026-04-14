@@ -2,10 +2,12 @@ import { type Options, query, type SDKMessage } from '@anthropic-ai/claude-agent
 import {
   createRuntimeClient,
   type RuntimeClient,
+  type RuntimeSession,
   type RuntimeSessionContext,
   type RuntimeSessionResumeRequest,
   type RuntimeSessionRunRequest,
   type RuntimeTaskRequest,
+  type RuntimeTaskResult,
 } from './runtime.js';
 
 export type AgentQueryFn = (params: { options?: Options; prompt: string }) => AsyncIterable<SDKMessage>;
@@ -15,14 +17,27 @@ export type AgentRuntimeOptions = {
   sdkOptions?: Omit<Options, 'cwd' | 'env'>;
 };
 
+export type AgentRunOptions = {
+  includeLogs?: boolean;
+  eventFilter?: (message: SDKMessage) => boolean;
+  queryOptions?: Omit<Options, 'cwd' | 'env' | 'resume'>;
+};
+
+export type AgentTaskResult = RuntimeTaskResult<SDKMessage[], SDKMessage>;
+
+export type AgentRuntimeSession = RuntimeSession<AgentRunOptions, AgentTaskResult, SDKMessage>;
+
+export type AgentRuntimeClient = RuntimeClient<AgentRunOptions, AgentTaskResult, SDKMessage>;
+
 type AgentSessionState = {
   current: string | undefined;
 };
 
-export function createAgentRuntime(options: AgentRuntimeOptions = {}): RuntimeClient {
+export function createAgentRuntime(options: AgentRuntimeOptions = {}): AgentRuntimeClient {
   return createRuntimeClient('agent-sdk', {
     resumeSession: (request) => createAgentSession(request, options),
-    run: async (request) => (await runAgentTask(request, options)).response,
+    run: (request, runOptions) => runAgentTask(request, options, undefined, runOptions),
+    runStream: (request, runOptions) => streamAgentTask(request, options, undefined, runOptions),
     startSession: (context) => createAgentSession(context, options),
   });
 }
@@ -31,51 +46,93 @@ async function createAgentSession(
   request: RuntimeSessionContext | RuntimeSessionResumeRequest,
   options: AgentRuntimeOptions
 ) {
-  let sessionId = 'sessionId' in request ? request.sessionId : undefined;
+  const sessionState: AgentSessionState = {
+    current: 'sessionId' in request ? request.sessionId : undefined,
+  };
 
   return {
-    getId: () => sessionId,
-    run: async (runRequest: RuntimeSessionRunRequest) => {
-      const sessionState: AgentSessionState = { current: sessionId };
-
-      try {
-        const result = await runAgentTask(
-          {
-            cwd: request.cwd,
-            env: request.env,
-            instructions: runRequest.instructions,
-          },
-          options,
-          sessionState
-        );
-        return result.response;
-      } finally {
-        sessionId = sessionState.current;
-      }
-    },
+    getId: () => sessionState.current,
+    run: (runRequest: RuntimeSessionRunRequest, runOptions?: AgentRunOptions) =>
+      runAgentTask(
+        {
+          cwd: request.cwd,
+          env: request.env,
+          instructions: runRequest.instructions,
+        },
+        options,
+        sessionState,
+        runOptions
+      ),
+    runStream: (runRequest: RuntimeSessionRunRequest, runOptions?: AgentRunOptions) =>
+      streamAgentTask(
+        {
+          cwd: request.cwd,
+          env: request.env,
+          instructions: runRequest.instructions,
+        },
+        options,
+        sessionState,
+        runOptions
+      ),
   };
 }
 
 async function runAgentTask(
   request: RuntimeTaskRequest,
   options: AgentRuntimeOptions,
-  sessionState?: AgentSessionState
-): Promise<{ response: { outputText: string; raw: SDKMessage[] }; sessionId: string | undefined }> {
+  sessionState?: AgentSessionState,
+  runOptions?: AgentRunOptions
+): Promise<Omit<AgentTaskResult, 'provider'>> {
   const messages: SDKMessage[] = [];
+  const logs: SDKMessage[] | undefined = runOptions?.includeLogs ? [] : undefined;
   let outputText = '';
+
+  for await (const message of iterateAgentMessages(request, options, sessionState, runOptions)) {
+    messages.push(message);
+    outputText = getLatestOutputText(message, outputText);
+    if (logs && matchesAgentEventFilter(runOptions, message)) {
+      logs.push(message);
+    }
+  }
+
+  return {
+    ...(logs ? { logs } : {}),
+    outputText,
+    raw: messages,
+  };
+}
+
+async function* streamAgentTask(
+  request: RuntimeTaskRequest,
+  options: AgentRuntimeOptions,
+  sessionState?: AgentSessionState,
+  runOptions?: AgentRunOptions
+): AsyncIterable<SDKMessage> {
+  for await (const message of iterateAgentMessages(request, options, sessionState, runOptions)) {
+    if (matchesAgentEventFilter(runOptions, message)) {
+      yield message;
+    }
+  }
+}
+
+async function* iterateAgentMessages(
+  request: RuntimeTaskRequest,
+  options: AgentRuntimeOptions,
+  sessionState?: AgentSessionState,
+  runOptions?: AgentRunOptions
+): AsyncIterable<SDKMessage> {
   let currentSessionId = sessionState?.current;
 
   for await (const message of (options.queryFn ?? query)({
     prompt: request.instructions,
     options: {
       ...options.sdkOptions,
+      ...runOptions?.queryOptions,
       cwd: request.cwd,
       env: request.env,
       resume: currentSessionId,
     },
   })) {
-    messages.push(message);
-    outputText = getLatestOutputText(message, outputText);
     const nextSessionId = getLatestSessionId(message, currentSessionId);
     if (nextSessionId !== currentSessionId) {
       currentSessionId = nextSessionId;
@@ -83,15 +140,8 @@ async function runAgentTask(
         sessionState.current = currentSessionId;
       }
     }
+    yield message;
   }
-
-  return {
-    response: {
-      outputText,
-      raw: messages,
-    },
-    sessionId: currentSessionId,
-  };
 }
 
 function getLatestOutputText(message: SDKMessage, previousOutput: string): string {
@@ -110,6 +160,10 @@ function getLatestOutputText(message: SDKMessage, previousOutput: string): strin
     return candidate.content;
   }
   return previousOutput;
+}
+
+function matchesAgentEventFilter(options: AgentRunOptions | undefined, message: SDKMessage): boolean {
+  return options?.eventFilter?.(message) ?? true;
 }
 
 function getLatestSessionId(message: SDKMessage, previousSessionId: string | undefined): string | undefined {
