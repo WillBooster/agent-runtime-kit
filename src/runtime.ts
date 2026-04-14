@@ -69,11 +69,7 @@ export function createRuntimeClient<TRunOptions = never, TRaw = unknown, TLog = 
     startSession: (context: RuntimeSessionContext) => Promise<RuntimeSessionExecutor<TRunOptions, TRaw, TLog>>;
   }
 ): RuntimeClient<TRunOptions, RuntimeTaskResult<TRaw, TLog>, TLog> {
-  let runStream: ((request: RuntimeTaskRequest, options?: TRunOptions) => AsyncIterable<TLog>) | undefined;
-  if (execute.runStream) {
-    const executeRunStream = execute.runStream;
-    runStream = (request, options) => executeRunStream(request, options);
-  }
+  const runStream = execute.runStream;
 
   return {
     provider,
@@ -88,11 +84,7 @@ function createRuntimeSession<TRunOptions, TRaw, TLog>(
   provider: RuntimeProvider,
   session: RuntimeSessionExecutor<TRunOptions, TRaw, TLog>
 ): RuntimeSession<TRunOptions, RuntimeTaskResult<TRaw, TLog>, TLog> {
-  let runStream: ((request: RuntimeSessionRunRequest, options?: TRunOptions) => AsyncIterable<TLog>) | undefined;
-  if (session.runStream) {
-    const sessionRunStream = session.runStream;
-    runStream = (request, options) => sessionRunStream(request, options);
-  }
+  const runStream = session.runStream;
 
   return {
     get id() {
