@@ -7,6 +7,7 @@ export {
   createAgentRuntime,
 } from './agent.js';
 export {
+  CodexRunError,
   type CodexRunOptions,
   type CodexRuntimeClient,
   type CodexRuntimeOptions,

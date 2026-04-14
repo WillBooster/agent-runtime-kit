@@ -36,6 +36,18 @@ export type CodexRuntimeSession = RuntimeSession<CodexRunOptions, CodexTaskResul
 
 export type CodexRuntimeClient = RuntimeClient<CodexRunOptions, CodexTaskResult, ThreadEvent>;
 
+export class CodexRunError extends Error {
+  logs?: ThreadEvent[];
+  raw: RunResult;
+
+  constructor(message: string, details: { logs?: ThreadEvent[]; raw: RunResult }) {
+    super(message);
+    this.name = 'CodexRunError';
+    this.logs = details.logs;
+    this.raw = details.raw;
+  }
+}
+
 export function createCodexRuntime(options: CodexRuntimeOptions = {}): CodexRuntimeClient {
   return createRuntimeClient('codex-sdk', {
     resumeSession: (request) => createCodexSession(request, options),
@@ -77,7 +89,7 @@ async function collectCodexRunResult(
   let usage: RunResult['usage'] = null;
 
   for await (const event of streamedResult.events) {
-    if (logs && (options?.eventFilter?.(event) ?? true)) {
+    if (logs && shouldEmitCodexEvent(event, options)) {
       logs.push(event);
     }
     const state = applyCodexEvent(items, outputText, usage, event);
@@ -89,15 +101,18 @@ async function collectCodexRunResult(
     }
   }
 
-  if (turnFailure) {
-    throw new Error(turnFailure.message);
-  }
-
   const raw: RunResult = {
     finalResponse: outputText,
     items,
     usage,
   };
+
+  if (turnFailure) {
+    throw new CodexRunError(turnFailure.message, {
+      ...(logs ? { logs } : {}),
+      raw,
+    });
+  }
 
   return {
     ...(logs ? { logs } : {}),
@@ -120,10 +135,14 @@ async function* streamCodexEvents(
 ): AsyncIterable<ThreadEvent> {
   const streamedResult = await streamedResultPromise;
   for await (const event of streamedResult.events) {
-    if (options?.eventFilter?.(event) ?? true) {
+    if (shouldEmitCodexEvent(event, options)) {
       yield event;
     }
   }
+}
+
+function shouldEmitCodexEvent(event: ThreadEvent, options: CodexRunOptions | undefined): boolean {
+  return event.type === 'turn.failed' || (options?.eventFilter?.(event) ?? true);
 }
 
 function applyCodexEvent(
