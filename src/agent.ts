@@ -20,7 +20,6 @@ export type AgentRuntimeOptions = {
 export type AgentRunOptions = {
   includeLogs?: boolean;
   eventFilter?: (message: SDKMessage) => boolean;
-  logFilter?: (message: SDKMessage) => boolean;
   queryOptions?: Omit<Options, 'cwd' | 'env' | 'resume'>;
 };
 
@@ -164,7 +163,7 @@ function getLatestOutputText(message: SDKMessage, previousOutput: string): strin
 }
 
 function matchesAgentEventFilter(options: AgentRunOptions | undefined, message: SDKMessage): boolean {
-  return options?.eventFilter?.(message) ?? options?.logFilter?.(message) ?? true;
+  return options?.eventFilter?.(message) ?? true;
 }
 
 function getLatestSessionId(message: SDKMessage, previousSessionId: string | undefined): string | undefined {
