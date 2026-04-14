@@ -36,18 +36,6 @@ export type CodexRuntimeSession = RuntimeSession<CodexRunOptions, CodexTaskResul
 
 export type CodexRuntimeClient = RuntimeClient<CodexRunOptions, CodexTaskResult, ThreadEvent>;
 
-export class CodexRunError extends Error {
-  logs?: ThreadEvent[];
-  raw: RunResult;
-
-  constructor(message: string, details: { logs?: ThreadEvent[]; raw: RunResult }) {
-    super(message);
-    this.name = 'CodexRunError';
-    this.logs = details.logs;
-    this.raw = details.raw;
-  }
-}
-
 export function createCodexRuntime(options: CodexRuntimeOptions = {}): CodexRuntimeClient {
   return createRuntimeClient('codex-sdk', {
     resumeSession: (request) => createCodexSession(request, options),
@@ -143,6 +131,18 @@ async function* streamCodexEvents(
 
 function shouldEmitCodexEvent(event: ThreadEvent, options: CodexRunOptions | undefined): boolean {
   return event.type === 'turn.failed' || (options?.eventFilter?.(event) ?? true);
+}
+
+export class CodexRunError extends Error {
+  logs?: ThreadEvent[];
+  raw: RunResult;
+
+  constructor(message: string, details: { logs?: ThreadEvent[]; raw: RunResult }) {
+    super(message);
+    this.name = 'CodexRunError';
+    this.logs = details.logs;
+    this.raw = details.raw;
+  }
 }
 
 function applyCodexEvent(

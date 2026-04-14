@@ -19,6 +19,7 @@ export type AgentRuntimeOptions = {
 
 export type AgentRunOptions = {
   includeLogs?: boolean;
+  eventFilter?: (message: SDKMessage) => boolean;
   logFilter?: (message: SDKMessage) => boolean;
   queryOptions?: Omit<Options, 'cwd' | 'env' | 'resume'>;
 };
@@ -90,7 +91,7 @@ async function runAgentTask(
   for await (const message of iterateAgentMessages(request, options, sessionState, runOptions)) {
     messages.push(message);
     outputText = getLatestOutputText(message, outputText);
-    if (logs && (runOptions?.logFilter?.(message) ?? true)) {
+    if (logs && matchesAgentEventFilter(runOptions, message)) {
       logs.push(message);
     }
   }
@@ -109,7 +110,7 @@ async function* streamAgentTask(
   runOptions?: AgentRunOptions
 ): AsyncIterable<SDKMessage> {
   for await (const message of iterateAgentMessages(request, options, sessionState, runOptions)) {
-    if (runOptions?.logFilter?.(message) ?? true) {
+    if (matchesAgentEventFilter(runOptions, message)) {
       yield message;
     }
   }
@@ -160,6 +161,10 @@ function getLatestOutputText(message: SDKMessage, previousOutput: string): strin
     return candidate.content;
   }
   return previousOutput;
+}
+
+function matchesAgentEventFilter(options: AgentRunOptions | undefined, message: SDKMessage): boolean {
+  return options?.eventFilter?.(message) ?? options?.logFilter?.(message) ?? true;
 }
 
 function getLatestSessionId(message: SDKMessage, previousSessionId: string | undefined): string | undefined {
