@@ -36,7 +36,7 @@ type AgentSessionState = {
 export function createAgentRuntime(options: AgentRuntimeOptions = {}): AgentRuntimeClient {
   return createRuntimeClient('agent-sdk', {
     resumeSession: (request) => createAgentSession(request, options),
-    run: async (request, runOptions) => (await runAgentTask(request, options, undefined, runOptions)).response,
+    run: (request, runOptions) => runAgentTask(request, options, undefined, runOptions),
     runStream: (request, runOptions) => streamAgentTask(request, options, undefined, runOptions),
     startSession: (context) => createAgentSession(context, options),
   });
@@ -62,7 +62,7 @@ async function createAgentSession(
         options,
         sessionState,
         runOptions
-      ).then((result) => result.response),
+      ),
     runStream: (runRequest: RuntimeSessionRunRequest, runOptions?: AgentRunOptions) =>
       streamAgentTask(
         {
@@ -82,7 +82,7 @@ async function runAgentTask(
   options: AgentRuntimeOptions,
   sessionState?: AgentSessionState,
   runOptions?: AgentRunOptions
-): Promise<{ response: Omit<AgentTaskResult, 'provider'>; sessionId: string | undefined }> {
+): Promise<Omit<AgentTaskResult, 'provider'>> {
   const messages: SDKMessage[] = [];
   const logs: SDKMessage[] | undefined = runOptions?.includeLogs ? [] : undefined;
   let outputText = '';
@@ -96,12 +96,9 @@ async function runAgentTask(
   }
 
   return {
-    response: {
-      ...(logs ? { logs } : {}),
-      outputText,
-      raw: messages,
-    },
-    sessionId: sessionState?.current,
+    ...(logs ? { logs } : {}),
+    outputText,
+    raw: messages,
   };
 }
 

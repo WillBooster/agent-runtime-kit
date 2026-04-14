@@ -152,7 +152,7 @@ function applyCodexEvent(
   if (event.type === 'turn.failed') {
     return {
       outputText: previousOutputText,
-      turnFailure: event.error ?? undefined,
+      turnFailure: event.error ?? { message: 'Turn failed' },
       usage: previousUsage,
     };
   }
