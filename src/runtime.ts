@@ -27,7 +27,7 @@ export type RuntimeSessionResumeRequest = RuntimeSessionContext & {
 };
 
 export type RuntimeSession<
-  TRunOptions = undefined,
+  TRunOptions = never,
   TResult extends RuntimeTaskResult = RuntimeTaskResult,
   TLog = unknown,
 > = {
@@ -35,17 +35,17 @@ export type RuntimeSession<
   readonly provider: RuntimeProvider;
   close: () => Promise<void>;
   run: (request: RuntimeSessionRunRequest, options?: TRunOptions) => Promise<TResult>;
-  runStream: (request: RuntimeSessionRunRequest, options?: TRunOptions) => AsyncIterable<TLog>;
+  runStream?: (request: RuntimeSessionRunRequest, options?: TRunOptions) => AsyncIterable<TLog>;
 };
 
 export type RuntimeClient<
-  TRunOptions = undefined,
+  TRunOptions = never,
   TResult extends RuntimeTaskResult = RuntimeTaskResult,
   TLog = unknown,
 > = {
   provider: RuntimeProvider;
   run: (request: RuntimeTaskRequest, options?: TRunOptions) => Promise<TResult>;
-  runStream: (request: RuntimeTaskRequest, options?: TRunOptions) => AsyncIterable<TLog>;
+  runStream?: (request: RuntimeTaskRequest, options?: TRunOptions) => AsyncIterable<TLog>;
   startSession: (context: RuntimeSessionContext) => Promise<RuntimeSession<TRunOptions, TResult, TLog>>;
   resumeSession: (request: RuntimeSessionResumeRequest) => Promise<RuntimeSession<TRunOptions, TResult, TLog>>;
 };
@@ -60,7 +60,7 @@ type RuntimeSessionExecutor<TRunOptions, TRaw, TLog> = {
   runStream: (request: RuntimeSessionRunRequest, options?: TRunOptions) => AsyncIterable<TLog>;
 };
 
-export function createRuntimeClient<TRunOptions = undefined, TRaw = unknown, TLog = unknown>(
+export function createRuntimeClient<TRunOptions = never, TRaw = unknown, TLog = unknown>(
   provider: RuntimeProvider,
   execute: {
     resumeSession: (request: RuntimeSessionResumeRequest) => Promise<RuntimeSessionExecutor<TRunOptions, TRaw, TLog>>;
