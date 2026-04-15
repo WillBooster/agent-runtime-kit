@@ -21,6 +21,7 @@ minimumReleaseAgeExcludes = [
   "@willbooster/shared-lib-react",
   "@willbooster/wb",
   "agent-runtime-kit",
+  "build-ts",
   "one-way-git-sync",
   "@typescript/native-preview",
   "@typescript/native-preview-darwin-arm64",
