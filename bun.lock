@@ -13,7 +13,7 @@
         "@types/bun": "1.3.11",
         "@typescript/native-preview": "7.0.0-dev.20260415.1",
         "@willbooster/oxfmt-config": "1.2.0",
-        "@willbooster/oxlint-config": "1.4.0",
+        "@willbooster/oxlint-config": "1.4.1",
         "@willbooster/prettier-config": "10.4.0",
         "@willbooster/wb": "13.8.1",
         "build-ts": "^17.0.26",
@@ -620,7 +620,7 @@
 
     "@willbooster/oxfmt-config": ["@willbooster/oxfmt-config@1.2.0", "", { "peerDependencies": { "oxfmt": ">=0.42.0" } }, "sha512-cQWUi4TYs2x7yx29xVaKN5EruFqHUIult3tzGaJBwp/51J/Hh/keqyN3wQMZwdbO64Wp5fRRw/DbUXX3Mj/2DQ=="],
 
-    "@willbooster/oxlint-config": ["@willbooster/oxlint-config@1.4.0", "", { "peerDependencies": { "oxlint": ">=1.60.0", "oxlint-tsgolint": ">=0.18.1" } }, "sha512-70FqhdhM5HgteD5C6kKZ8xk1OuPw6xKjw5APbU7mQUjqHdXY0h+GVT7Zga9K1/P5rsW7ScpnO6rmcEqRgByjHA=="],
+    "@willbooster/oxlint-config": ["@willbooster/oxlint-config@1.4.1", "", { "peerDependencies": { "oxlint": ">=1.60.0", "oxlint-tsgolint": ">=0.18.1" } }, "sha512-jV4lbu6v34BI3qJRlVj3kqviEsx4HaHQPYj1agvnHrGo+A59Ysq2821/ekjZd1cJyLPcvKyWYIdwt6C6zPxG9A=="],
 
     "@willbooster/prettier-config": ["@willbooster/prettier-config@10.4.0", "", { "peerDependencies": { "prettier": ">=3", "prettier-plugin-java": ">=2.6" } }, "sha512-oFnP2z/Huifbg8SuDzaNfrJGSWkixbldsidquHiZPAsSi4rIV3GG7JXBkqaoAixz3FvRPZ8JAdOJskeEBt+fqg=="],
 
