@@ -1,1 +1,1 @@
-bun --bun wb typecheck
+bun --bun wb lint

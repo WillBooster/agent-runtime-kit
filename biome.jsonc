@@ -1,5 +1,0 @@
-{
-  "root": true,
-  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["@willbooster/biome-config"]
-}

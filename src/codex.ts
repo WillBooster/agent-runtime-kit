@@ -3,6 +3,7 @@ import {
   type CodexOptions,
   type RunResult,
   type RunStreamedResult,
+  type Thread,
   type ThreadEvent,
   type ThreadOptions,
   type TurnOptions,
@@ -18,23 +19,29 @@ import {
   type RuntimeTaskResult,
 } from './runtime.js';
 
-export type CodexRuntimeOptions = {
+export interface CodexRuntimeOptions {
   client?: Codex;
   clientOptions?: CodexOptions;
   threadOptions?: Omit<ThreadOptions, 'workingDirectory'>;
-};
+}
 
-export type CodexRunOptions = {
+export interface CodexRunOptions {
   eventFilter?: (event: ThreadEvent) => boolean;
   includeLogs?: boolean;
   turnOptions?: TurnOptions;
-};
+}
 
 export type CodexTaskResult = RuntimeTaskResult<RunResult, ThreadEvent>;
 
 export type CodexRuntimeSession = RuntimeSession<CodexRunOptions, CodexTaskResult, ThreadEvent>;
 
 export type CodexRuntimeClient = RuntimeClient<CodexRunOptions, CodexTaskResult, ThreadEvent>;
+
+interface CodexSessionExecutor {
+  getId: () => string | undefined;
+  run: (request: RuntimeSessionRunRequest, options?: CodexRunOptions) => Promise<Omit<CodexTaskResult, 'provider'>>;
+  runStream: (request: RuntimeSessionRunRequest, options?: CodexRunOptions) => AsyncIterable<ThreadEvent>;
+}
 
 export function createCodexRuntime(options: CodexRuntimeOptions = {}): CodexRuntimeClient {
   return createRuntimeClient('codex-sdk', {
@@ -45,7 +52,11 @@ export function createCodexRuntime(options: CodexRuntimeOptions = {}): CodexRunt
   });
 }
 
-async function runCodexTask(request: RuntimeTaskRequest, options: CodexRuntimeOptions, runOptions?: CodexRunOptions) {
+async function runCodexTask(
+  request: RuntimeTaskRequest,
+  options: CodexRuntimeOptions,
+  runOptions?: CodexRunOptions
+): Promise<Omit<CodexTaskResult, 'provider'>> {
   const thread = createCodexThread(request, options);
   return collectCodexRunResult(thread.runStreamed(request.instructions, runOptions?.turnOptions), runOptions);
 }
@@ -53,7 +64,7 @@ async function runCodexTask(request: RuntimeTaskRequest, options: CodexRuntimeOp
 async function createCodexSession(
   request: RuntimeSessionContext | RuntimeSessionResumeRequest,
   options: CodexRuntimeOptions
-) {
+): Promise<CodexSessionExecutor> {
   const thread = createCodexThread(request, options);
 
   return {
@@ -74,6 +85,8 @@ async function collectCodexRunResult(
   const items: RunResult['items'] = [];
   let outputText = '';
   let turnFailure: { message: string } | undefined;
+  // Codex SDK represents missing usage as null in RunResult.
+  // oxlint-disable-next-line eslint-plugin-unicorn/no-null
   let usage: RunResult['usage'] = null;
 
   for await (const event of streamedResult.events) {
@@ -183,7 +196,10 @@ function applyCodexEvent(
   };
 }
 
-function createCodexThread(request: RuntimeSessionContext | RuntimeSessionResumeRequest, options: CodexRuntimeOptions) {
+function createCodexThread(
+  request: RuntimeSessionContext | RuntimeSessionResumeRequest,
+  options: CodexRuntimeOptions
+): Thread {
   const client = options.client ?? new Codex(createCodexOptions(request.env, options.clientOptions));
   const threadOptions = {
     ...options.threadOptions,
