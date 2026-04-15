@@ -12,16 +12,16 @@ import {
 
 export type AgentQueryFn = (params: { options?: Options; prompt: string }) => AsyncIterable<SDKMessage>;
 
-export type AgentRuntimeOptions = {
+export interface AgentRuntimeOptions {
   queryFn?: AgentQueryFn;
   sdkOptions?: Omit<Options, 'cwd' | 'env'>;
-};
+}
 
-export type AgentRunOptions = {
+export interface AgentRunOptions {
   includeLogs?: boolean;
   eventFilter?: (message: SDKMessage) => boolean;
   queryOptions?: Omit<Options, 'cwd' | 'env' | 'resume'>;
-};
+}
 
 export type AgentTaskResult = RuntimeTaskResult<SDKMessage[], SDKMessage>;
 
@@ -29,9 +29,15 @@ export type AgentRuntimeSession = RuntimeSession<AgentRunOptions, AgentTaskResul
 
 export type AgentRuntimeClient = RuntimeClient<AgentRunOptions, AgentTaskResult, SDKMessage>;
 
-type AgentSessionState = {
+interface AgentSessionState {
   current: string | undefined;
-};
+}
+
+interface AgentSessionExecutor {
+  getId: () => string | undefined;
+  run: (request: RuntimeSessionRunRequest, options?: AgentRunOptions) => Promise<Omit<AgentTaskResult, 'provider'>>;
+  runStream: (request: RuntimeSessionRunRequest, options?: AgentRunOptions) => AsyncIterable<SDKMessage>;
+}
 
 export function createAgentRuntime(options: AgentRuntimeOptions = {}): AgentRuntimeClient {
   return createRuntimeClient('agent-sdk', {
@@ -45,7 +51,7 @@ export function createAgentRuntime(options: AgentRuntimeOptions = {}): AgentRunt
 async function createAgentSession(
   request: RuntimeSessionContext | RuntimeSessionResumeRequest,
   options: AgentRuntimeOptions
-) {
+): Promise<AgentSessionExecutor> {
   const sessionState: AgentSessionState = {
     current: 'sessionId' in request ? request.sessionId : undefined,
   };

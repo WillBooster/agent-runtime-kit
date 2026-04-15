@@ -19,12 +19,12 @@ for (const provider of SUPPORTED_RUNTIME_PROVIDERS) {
   });
 }
 
-function createRuntime(provider: RuntimeProvider) {
+function createRuntime(
+  provider: RuntimeProvider
+): ReturnType<typeof createAgentRuntime> | ReturnType<typeof createCodexRuntime> {
   if (provider === 'agent-sdk') {
     return createAgentRuntime({
-      queryFn: async function* query() {
-        yield { result: 'agent-sdk:hello' } as never;
-      },
+      queryFn: queryAgentHello,
     });
   }
 
@@ -56,4 +56,8 @@ function createRuntime(provider: RuntimeProvider) {
       },
     } as never,
   });
+}
+
+async function* queryAgentHello(): AsyncIterable<never> {
+  yield { result: 'agent-sdk:hello' } as never;
 }

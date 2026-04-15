@@ -4,12 +4,12 @@ import os from 'node:os';
 import path from 'node:path';
 import { setTimeout } from 'node:timers/promises';
 
-export type RunResult = {
+export interface RunResult {
   combined: string;
   exitCode: number;
   stderr: string;
   stdout: string;
-};
+}
 
 export async function createTemporaryDirectory(prefix: string): Promise<string> {
   return mkdtemp(path.join(os.tmpdir(), `${prefix}-`));
@@ -93,7 +93,7 @@ export async function waitForPullRequestForBranch(
         lastResponse = trimmed;
       }
     }
-    await setTimeout(2_000);
+    await setTimeout(2000);
   }
 
   const details = lastResponse ? ` Last response: ${lastResponse}` : '';
