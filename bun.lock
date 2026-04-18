@@ -5,7 +5,7 @@
     "": {
       "name": "agent-runtime-kit",
       "dependencies": {
-        "@anthropic-ai/claude-agent-sdk": "0.2.92",
+        "@anthropic-ai/claude-agent-sdk": "0.2.104",
         "@openai/codex-sdk": "0.118.0",
       },
       "devDependencies": {
@@ -15,7 +15,7 @@
         "@willbooster/oxfmt-config": "1.2.1",
         "@willbooster/oxlint-config": "1.4.4",
         "@willbooster/prettier-config": "10.4.0",
-        "@willbooster/wb": "13.11.2",
+        "@willbooster/wb": "13.11.3",
         "build-ts": "17.1.0",
         "conventional-changelog-conventionalcommits": "9.3.1",
         "lefthook": "2.1.5",
@@ -38,9 +38,9 @@
 
     "@actions/io": ["@actions/io@3.0.2", "", {}, "sha512-nRBchcMM+QK1pdjO7/idu86rbJI5YHUKCvKs0KxnSYbVe3F51UfGxuZX4Qy/fWlp6l7gWFwIkrOzN+oUK03kfw=="],
 
-    "@anthropic-ai/claude-agent-sdk": ["@anthropic-ai/claude-agent-sdk@0.2.92", "", { "dependencies": { "@anthropic-ai/sdk": "^0.80.0", "@modelcontextprotocol/sdk": "^1.27.1" }, "optionalDependencies": { "@img/sharp-darwin-arm64": "^0.34.2", "@img/sharp-darwin-x64": "^0.34.2", "@img/sharp-linux-arm": "^0.34.2", "@img/sharp-linux-arm64": "^0.34.2", "@img/sharp-linux-x64": "^0.34.2", "@img/sharp-linuxmusl-arm64": "^0.34.2", "@img/sharp-linuxmusl-x64": "^0.34.2", "@img/sharp-win32-arm64": "^0.34.2", "@img/sharp-win32-x64": "^0.34.2" }, "peerDependencies": { "zod": "^4.0.0" } }, "sha512-loYyxVUC5gBwHjGi9Fv0b84mduJTp9Z3Pum+y/7IVQDb4NynKfVQl6l4VeDKZaW+1QTQtd25tY4hwUznD7Krqw=="],
+    "@anthropic-ai/claude-agent-sdk": ["@anthropic-ai/claude-agent-sdk@0.2.104", "", { "dependencies": { "@anthropic-ai/sdk": "^0.81.0", "@modelcontextprotocol/sdk": "^1.29.0" }, "optionalDependencies": { "@img/sharp-darwin-arm64": "^0.34.2", "@img/sharp-darwin-x64": "^0.34.2", "@img/sharp-linux-arm": "^0.34.2", "@img/sharp-linux-arm64": "^0.34.2", "@img/sharp-linux-x64": "^0.34.2", "@img/sharp-linuxmusl-arm64": "^0.34.2", "@img/sharp-linuxmusl-x64": "^0.34.2", "@img/sharp-win32-arm64": "^0.34.2", "@img/sharp-win32-x64": "^0.34.2" }, "peerDependencies": { "zod": "^4.0.0" } }, "sha512-lVm+nS79r6WWlDnv5AgRzTtAlbP8O6M6kkWmDZAWE3nt9agmngxls9frJFvH55uzws2+6l0yyup/JYspfijkzw=="],
 
-    "@anthropic-ai/sdk": ["@anthropic-ai/sdk@0.80.0", "", { "dependencies": { "json-schema-to-ts": "^3.1.1" }, "peerDependencies": { "zod": "^3.25.0 || ^4.0.0" }, "optionalPeers": ["zod"], "bin": { "anthropic-ai-sdk": "bin/cli" } }, "sha512-WeXLn7zNVk3yjeshn+xZHvld6AoFUOR3Sep6pSoHho5YbSi6HwcirqgPA5ccFuW8QTVJAAU7N8uQQC6Wa9TG+g=="],
+    "@anthropic-ai/sdk": ["@anthropic-ai/sdk@0.81.0", "", { "dependencies": { "json-schema-to-ts": "^3.1.1" }, "peerDependencies": { "zod": "^3.25.0 || ^4.0.0" }, "optionalPeers": ["zod"], "bin": { "anthropic-ai-sdk": "bin/cli" } }, "sha512-D4K5PvEV6wPiRtVlVsJHIUhHAmOZ6IT/I9rKlTf84gR7GyyAurPJK7z9BOf/AZqC5d1DhYQGJNKRmV+q8dGhgw=="],
 
     "@babel/code-frame": ["@babel/code-frame@7.29.0", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.28.5", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw=="],
 
@@ -616,7 +616,7 @@
 
     "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@8.3.2", "", { "dependencies": { "dotenv": "17.3.1", "dotenv-expand": "12.0.3" } }, "sha512-+hSPOaFu4chan46lb5DYtz2M6khVLhILdeknwt7Ri05Bl1Xw2zPcv/yB3QV//3uF7XV0peffQy7B3sjD8Dlh2A=="],
 
-    "@willbooster/wb": ["@willbooster/wb@13.11.2", "", { "dependencies": { "chalk": "5.6.2", "dotenv": "17.4.1", "dotenv-expand": "12.0.3", "globby": "16.2.0", "kill-port": "2.0.1", "minimal-promise-pool": "6.0.1", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-p4IAis0SBSPWe0diFDBRXPH7lvpDz4isa74BxWgCWaqWqY4K2iVbWcDruuJj+W34eTytmS8CWCNoRATZNxkqHQ=="],
+    "@willbooster/wb": ["@willbooster/wb@13.11.3", "", { "dependencies": { "chalk": "5.6.2", "dotenv": "17.4.1", "dotenv-expand": "12.0.3", "globby": "16.2.0", "kill-port": "2.0.1", "minimal-promise-pool": "6.0.1", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-dq1ZQ+1zSNZnTl/Pt9Gm41SIXM+p7wbq1RsHqrK/ZEg6FCT7CLC+nXfqnpGw7vaiTU7SJvX3Bh4oBi3S5S7tYQ=="],
 
     "accepts": ["accepts@2.0.0", "", { "dependencies": { "mime-types": "^3.0.0", "negotiator": "^1.0.0" } }, "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng=="],
 
