@@ -15,7 +15,7 @@
         "@willbooster/oxfmt-config": "1.2.1",
         "@willbooster/oxlint-config": "1.4.4",
         "@willbooster/prettier-config": "10.4.0",
-        "@willbooster/wb": "13.11.3",
+        "@willbooster/wb": "13.11.5",
         "build-ts": "17.1.0",
         "conventional-changelog-conventionalcommits": "9.3.1",
         "lefthook": "2.1.5",
@@ -616,7 +616,7 @@
 
     "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@8.3.2", "", { "dependencies": { "dotenv": "17.3.1", "dotenv-expand": "12.0.3" } }, "sha512-+hSPOaFu4chan46lb5DYtz2M6khVLhILdeknwt7Ri05Bl1Xw2zPcv/yB3QV//3uF7XV0peffQy7B3sjD8Dlh2A=="],
 
-    "@willbooster/wb": ["@willbooster/wb@13.11.3", "", { "dependencies": { "chalk": "5.6.2", "dotenv": "17.4.1", "dotenv-expand": "12.0.3", "globby": "16.2.0", "kill-port": "2.0.1", "minimal-promise-pool": "6.0.1", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-dq1ZQ+1zSNZnTl/Pt9Gm41SIXM+p7wbq1RsHqrK/ZEg6FCT7CLC+nXfqnpGw7vaiTU7SJvX3Bh4oBi3S5S7tYQ=="],
+    "@willbooster/wb": ["@willbooster/wb@13.11.5", "", { "dependencies": { "chalk": "5.6.2", "dotenv": "17.4.2", "dotenv-expand": "12.0.3", "globby": "16.2.0", "kill-port": "2.0.1", "minimal-promise-pool": "6.0.1", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-BwcG8Ys1ZFPj5JSM+mZBeirjbKGXzNa+Qq63PVRCMUXfn6TD9lT9KxWmfKOvl202Nd/vVmlhswIBoA6n+iQVpw=="],
 
     "accepts": ["accepts@2.0.0", "", { "dependencies": { "mime-types": "^3.0.0", "negotiator": "^1.0.0" } }, "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng=="],
 
@@ -764,7 +764,7 @@
 
     "dot-prop": ["dot-prop@5.3.0", "", { "dependencies": { "is-obj": "^2.0.0" } }, "sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q=="],
 
-    "dotenv": ["dotenv@17.4.1", "", {}, "sha512-k8DaKGP6r1G30Lx8V4+pCsLzKr8vLmV2paqEj1Y55GdAgJuIqpRp5FfajGF8KtwMxCz9qJc6wUIJnm053d/WCw=="],
+    "dotenv": ["dotenv@17.4.2", "", {}, "sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw=="],
 
     "dotenv-expand": ["dotenv-expand@12.0.3", "", { "dependencies": { "dotenv": "^16.4.5" } }, "sha512-uc47g4b+4k/M/SeaW1y4OApx+mtLWl92l5LMPP0GNXctZqELk+YGgOPIIC5elYmUH4OuoK3JLhuRUYegeySiFA=="],
 
