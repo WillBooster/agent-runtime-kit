@@ -35,7 +35,7 @@
   },
   "prettier": "@willbooster/prettier-config",
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "0.2.92",
+    "@anthropic-ai/claude-agent-sdk": "0.2.104",
     "@openai/codex-sdk": "0.118.0"
   },
   "devDependencies": {
