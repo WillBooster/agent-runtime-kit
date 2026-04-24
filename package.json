@@ -34,7 +34,7 @@
     "typecheck": "bun --bun wb typecheck"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "0.2.104",
+    "@anthropic-ai/claude-agent-sdk": "0.2.114",
     "@openai/codex-sdk": "0.120.0"
   },
   "devDependencies": {
@@ -43,10 +43,10 @@
     "@typescript/native-preview": "7.0.0-dev.20260419.1",
     "@willbooster/oxfmt-config": "1.2.1",
     "@willbooster/oxlint-config": "1.4.4",
-    "@willbooster/wb": "13.11.8",
+    "@willbooster/wb": "13.11.10",
     "build-ts": "17.1.6",
     "conventional-changelog-conventionalcommits": "9.3.1",
-    "lefthook": "2.1.5",
+    "lefthook": "2.1.6",
     "oxfmt": "0.45.0",
     "oxlint": "1.60.0",
     "oxlint-tsgolint": "0.21.0",
