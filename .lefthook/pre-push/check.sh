@@ -1,1 +1,1 @@
-bun --bun wb lint
+bun --bun wb lint --quiet
