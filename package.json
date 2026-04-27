@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "0.2.114",
-    "@openai/codex-sdk": "0.121.0"
+    "@openai/codex-sdk": "0.125.0"
   },
   "devDependencies": {
     "@tsconfig/bun": "1.0.10",
