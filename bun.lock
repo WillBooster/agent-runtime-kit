@@ -10,7 +10,7 @@
       },
       "devDependencies": {
         "@tsconfig/bun": "1.0.10",
-        "@types/bun": "1.3.12",
+        "@types/bun": "1.3.13",
         "@typescript/native-preview": "7.0.0-dev.20260421.2",
         "@willbooster/oxfmt-config": "1.2.2",
         "@willbooster/oxlint-config": "1.4.6",
@@ -553,7 +553,7 @@
 
     "@tsconfig/bun": ["@tsconfig/bun@1.0.10", "", {}, "sha512-5AV5YknQjNyoYzZ/8NG0dawqew/wH+x7ANiCfCIn29qo0cdbd1EryvFD1k5NSZWLBMOI/fGqMIaxi58GPIP9Cg=="],
 
-    "@types/bun": ["@types/bun@1.3.12", "", { "dependencies": { "bun-types": "1.3.12" } }, "sha512-DBv81elK+/VSwXHDlnH3Qduw+KxkTIWi7TXkAeh24zpi5l0B2kUg9Ga3tb4nJaPcOFswflgi/yAvMVBPrxMB+A=="],
+    "@types/bun": ["@types/bun@1.3.13", "", { "dependencies": { "bun-types": "1.3.13" } }, "sha512-9fqXWk5YIHGGnUau9TEi+qdlTYDAnOj+xLCmSTwXfAIqXr2x4tytJb43E9uCvt09zJURKXwAtkoH4nLQfzeTXw=="],
 
     "@types/estree": ["@types/estree@1.0.8", "", {}, "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="],
 
@@ -637,7 +637,7 @@
 
     "build-ts": ["build-ts@17.1.8", "", { "dependencies": { "@babel/core": "7.29.0", "@babel/plugin-proposal-decorators": "7.29.0", "@babel/plugin-proposal-explicit-resource-management": "7.27.4", "@babel/plugin-syntax-import-attributes": "7.28.6", "@babel/plugin-transform-runtime": "7.29.0", "@babel/preset-env": "7.29.2", "@babel/preset-react": "7.28.5", "@babel/preset-typescript": "7.28.5", "@rollup/plugin-babel": "7.0.0", "@rollup/plugin-commonjs": "29.0.2", "@rollup/plugin-json": "6.1.0", "@rollup/plugin-node-resolve": "16.0.3", "@rollup/plugin-replace": "6.0.3", "@rollup/plugin-terser": "1.0.0", "@rollup/pluginutils": "5.3.0", "@typescript/native-preview": "7.0.0-dev.20260420.1", "@willbooster/shared-lib-node": "8.5.9", "babel-plugin-polyfill-corejs3": "0.14.2", "babel-plugin-transform-remove-console": "6.9.4", "chalk": "5.6.2", "core-js": "3.49.0", "core-js-pure": "3.49.0", "date-time": "4.0.0", "pretty-ms": "9.3.0", "rollup": "4.60.2", "rollup-plugin-analyzer": "4.0.0", "rollup-plugin-keep-import": "1.0.3", "rollup-plugin-node-externals": "9.0.1", "rollup-plugin-preserve-directives": "0.4.0", "rollup-plugin-string": "3.0.0", "signal-exit": "4.1.0", "tsx": "4.21.0", "yargs": "18.0.0" }, "bin": { "build-ts": "bin/index.js" } }, "sha512-R6Sg/nnSi1n10XLD7gpEo0QrGvcLEC/Ot+p9bNG6PZp0yppq2553bDiHPm2L2StHcZjgnhlQ6L53XYYzcREGaQ=="],
 
-    "bun-types": ["bun-types@1.3.12", "", { "dependencies": { "@types/node": "*" } }, "sha512-HqOLj5PoFajAQciOMRiIZGNoKxDJSr6qigAttOX40vJuSp6DN/CxWp9s3C1Xwm4oH7ybueITwiaOcWXoYVoRkA=="],
+    "bun-types": ["bun-types@1.3.13", "", { "dependencies": { "@types/node": "*" } }, "sha512-QXKeHLlOLqQX9LgYaHJfzdBaV21T63HhFJnvuRCcjZiaUDpbs5ED1MgxbMra71CsryN/1dAoXuJJJwIv/2drVA=="],
 
     "bytes": ["bytes@3.1.2", "", {}, "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg=="],
 
