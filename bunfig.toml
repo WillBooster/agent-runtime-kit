@@ -9,6 +9,7 @@ minimumReleaseAge = 432000 # 5 days
 minimumReleaseAgeExcludes = [
   "@exercode/problem-utils",
   "@willbooster/agent-skills",
+  "@willbooster/agent-workflows",
   "@willbooster/babel-configs",
   "@willbooster/monaco-loader",
   "@willbooster/monaco-react",
