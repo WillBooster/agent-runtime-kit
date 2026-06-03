@@ -14,7 +14,7 @@
         "@typescript/native-preview": "7.0.0-dev.20260518.1",
         "@willbooster/oxfmt-config": "1.2.2",
         "@willbooster/oxlint-config": "1.4.7",
-        "@willbooster/wb": "13.21.1",
+        "@willbooster/wb": "13.22.1",
         "build-ts": "17.1.15",
         "conventional-changelog-conventionalcommits": "9.3.1",
         "lefthook": "2.1.6",
@@ -589,7 +589,7 @@
 
     "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@8.5.17", "", { "dependencies": { "dotenv": "17.4.2", "dotenv-expand": "13.0.0" } }, "sha512-hgrH7uvHEz8ONFsuj3uCBhwtlcqdO+u7CdG/G0Mk2l2FP0auAmWkGWA9HwUYOrnqiWH/h4QrumWXVS8F0karjw=="],
 
-    "@willbooster/wb": ["@willbooster/wb@13.21.1", "", { "dependencies": { "chalk": "5.6.2", "dotenv": "17.4.2", "dotenv-expand": "13.0.0", "fastest-levenshtein": "1.0.16", "globby": "16.2.0", "kill-port": "2.0.1", "minimal-promise-pool": "6.0.2", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-H/0FvnZB0NHJ4smPQZRDmpIWvMcAfhME1796pOTqRr6JT6iW2EauIlyQ5SgYjbdGaYlJ3Vt+++frtNdxeTkMZw=="],
+    "@willbooster/wb": ["@willbooster/wb@13.22.1", "", { "dependencies": { "chalk": "5.6.2", "dotenv": "17.4.2", "dotenv-expand": "13.0.0", "fastest-levenshtein": "1.0.16", "globby": "16.2.0", "kill-port": "2.0.1", "minimal-promise-pool": "6.0.2", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-PkgeCs37n0AI41Knw+JQl6F47WSIg48KHatU21fMZv6ID7j/jHKS4j6ujsYZHPU/VLQYbyFTY18Ag5dZcwSNYQ=="],
 
     "accepts": ["accepts@2.0.0", "", { "dependencies": { "mime-types": "^3.0.0", "negotiator": "^1.0.0" } }, "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng=="],
 
