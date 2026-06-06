@@ -13,7 +13,7 @@
         "@types/bun": "1.3.14",
         "@typescript/native-preview": "7.0.0-dev.20260518.1",
         "@willbooster/oxfmt-config": "1.2.2",
-        "@willbooster/oxlint-config": "1.4.7",
+        "@willbooster/oxlint-config": "1.4.8",
         "@willbooster/wb": "13.22.7",
         "build-ts": "17.1.15",
         "conventional-changelog-conventionalcommits": "9.3.1",
@@ -585,7 +585,7 @@
 
     "@willbooster/oxfmt-config": ["@willbooster/oxfmt-config@1.2.2", "", { "peerDependencies": { "oxfmt": ">=0.42.0" } }, "sha512-yLXfvQa23zc8l2d3RHlTnIeAXNpk+5PvrGc9xkMa/wj30jZbF5Kz5AUCZfXatdJb5GF8WmlFWOEZ9sK2jmtS/A=="],
 
-    "@willbooster/oxlint-config": ["@willbooster/oxlint-config@1.4.7", "", { "peerDependencies": { "oxlint": ">=1.60.0", "oxlint-tsgolint": ">=0.18.1" } }, "sha512-JB8slThKftPhpLqBwjPtbJzl3UFnzjgIpPI4mIo00I5ywrj+J8sHMfNt51DF6Ym9t0W6iKV880ych3hHgkoBuQ=="],
+    "@willbooster/oxlint-config": ["@willbooster/oxlint-config@1.4.8", "", { "peerDependencies": { "oxlint": ">=1.60.0", "oxlint-tsgolint": ">=0.18.1" } }, "sha512-i3WWcAc1N6QzA91321dJFGUxXYuuXG4bj12pKlyjCmQRqrulvshFW35PUcaRdw1pVr7I7zHEGK1WUIjbkBd3Vg=="],
 
     "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@8.5.17", "", { "dependencies": { "dotenv": "17.4.2", "dotenv-expand": "13.0.0" } }, "sha512-hgrH7uvHEz8ONFsuj3uCBhwtlcqdO+u7CdG/G0Mk2l2FP0auAmWkGWA9HwUYOrnqiWH/h4QrumWXVS8F0karjw=="],
 
