@@ -40,7 +40,6 @@
   "devDependencies": {
     "@tsconfig/bun": "1.0.10",
     "@types/bun": "1.3.14",
-    "@typescript/native-preview": "7.0.0-dev.20260518.1",
     "@willbooster/oxfmt-config": "1.2.2",
     "@willbooster/oxlint-config": "1.4.8",
     "@willbooster/wb": "13.23.1",
