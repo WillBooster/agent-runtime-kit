@@ -131,4 +131,7 @@ minimumReleaseAgeExcludes = [
   "next",
   "react",
   "react-dom",
+  "@vinext/cloudflare",
+  "@vinext/types",
+  "vinext",
 ]
