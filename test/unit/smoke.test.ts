@@ -4,7 +4,7 @@ import {
   createCodexRuntime,
   type RuntimeProvider,
   SUPPORTED_RUNTIME_PROVIDERS,
-} from '../src/index.js';
+} from '../../src/index.js';
 
 for (const provider of SUPPORTED_RUNTIME_PROVIDERS) {
   test(`wraps ${provider} behind one interface`, async () => {
