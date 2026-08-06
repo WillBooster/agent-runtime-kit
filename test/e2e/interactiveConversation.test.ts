@@ -2,9 +2,8 @@ import { expect, test } from 'bun:test';
 import { createAgentRuntime, createCodexRuntime, type RuntimeSession } from '../../src/index.js';
 
 const E2E_TIMEOUT = 1000 * 60 * 20;
-const runtimeTest = process.env.CI ? test.skip : test;
 
-runtimeTest(
+test(
   'supports interactive conversation across Codex and Claude sessions',
   async () => {
     const cwd = process.cwd();
