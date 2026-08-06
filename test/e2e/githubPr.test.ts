@@ -17,10 +17,9 @@ const ISSUE_URL = 'https://github.com/exKAZUu/agent-benchmark/issues/1';
 const REPO_URL = 'https://github.com/exKAZUu/agent-benchmark.git';
 const rootDir = path.resolve(import.meta.dir, '..', '..');
 const userProgramPath = path.join(rootDir, 'test', 'fixtures', 'github-pr-program.ts');
-const runtimeTest = process.env.CI ? test.skip : test;
 
 for (const provider of SUPPORTED_RUNTIME_PROVIDERS) {
-  runtimeTest(
+  test(
     `creates a PR for ${ISSUE_URL} with ${provider} and waits for required checks to pass`,
     async () => {
       const workDir = await createTemporaryDirectory('agent-runtime-kit-e2e');

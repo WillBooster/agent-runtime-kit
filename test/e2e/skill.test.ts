@@ -3,10 +3,9 @@ import { createAgentRuntime, createCodexRuntime, type RuntimeClient } from '../.
 
 const E2E_TIMEOUT = 1000 * 60 * 20;
 const ISSUE_NO = '3';
-const runtimeTest = process.env.CI ? test.skip : test;
 
 for (const provider of ['agent-sdk', 'codex-sdk'] as const) {
-  runtimeTest(
+  test(
     `can use the fetch-issue skill against a GitHub issue with ${provider}`,
     async () => {
       const runtime = createRuntime(provider);
