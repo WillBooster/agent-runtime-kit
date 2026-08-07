@@ -28,7 +28,7 @@
     "prepare": "lefthook install || true",
     "release": "semantic-release",
     "test": "bun wb test",
-    "test:e2e-github": "bun test test/e2e/githubPr.test.ts",
+    "test:e2e-github": "bun wb test test/debug/githubPr.test.ts",
     "test/ci": "bun wb test-on-ci",
     "typecheck": "bun wb typecheck",
     "verify": "bun wb verify",
