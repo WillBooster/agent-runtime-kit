@@ -36,14 +36,14 @@
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "0.3.261",
-    "@openai/codex-sdk": "0.153.4"
+    "@openai/codex-sdk": "0.154.0"
   },
   "devDependencies": {
     "@tsconfig/bun": "1.0.11",
     "@types/bun": "1.4.2",
     "@willbooster/oxfmt-config": "1.2.2",
     "@willbooster/oxlint-config": "1.4.8",
-    "@willbooster/wb": "22.3.3",
+    "@willbooster/wb": "22.4.0",
     "build-ts": "21.0.12",
     "conventional-changelog-conventionalcommits": "10.4.0",
     "lefthook": "2.1.12",
