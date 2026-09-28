@@ -8,6 +8,7 @@ import {
   type ThreadOptions,
   type TurnOptions,
 } from '@openai/codex-sdk';
+import { omitUndefined } from '@willbooster/shared-lib';
 import {
   createRuntimeClient,
   type RuntimeClient,
@@ -223,14 +224,8 @@ function createCodexOptions(
 
   return {
     ...options,
-    env: normalizeEnv(env),
+    env: omitUndefined(env),
   };
-}
-
-function normalizeEnv(env: NodeJS.ProcessEnv): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(env).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
-  );
 }
 
 function formatRunResult(result: RunResult): { outputText: string; raw: RunResult } {
