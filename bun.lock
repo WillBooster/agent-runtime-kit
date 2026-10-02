@@ -7,7 +7,7 @@
       "dependencies": {
         "@anthropic-ai/claude-agent-sdk": "0.3.278",
         "@openai/codex-sdk": "0.155.1",
-        "@willbooster/shared-lib": "^10.18.0",
+        "@willbooster/shared-lib": "10.19.1",
       },
       "devDependencies": {
         "@tsconfig/bun": "1.0.11",
@@ -638,7 +638,7 @@
 
     "@willbooster/oxlint-config": ["@willbooster/oxlint-config@1.4.8", "", { "peerDependencies": { "oxlint": ">=1.60.0", "oxlint-tsgolint": ">=0.18.1" } }, "sha512-i3WWcAc1N6QzA91321dJFGUxXYuuXG4bj12pKlyjCmQRqrulvshFW35PUcaRdw1pVr7I7zHEGK1WUIjbkBd3Vg=="],
 
-    "@willbooster/shared-lib": ["@willbooster/shared-lib@10.18.0", "", {}, "sha512-R3wgsiueBaFvWU/uj8JXCvq3nkRQPfsb7j2ShZlkgAHYodiOBQt13kXuj/kDiEI9YJTdn9b0UvchuV3JBootOw=="],
+    "@willbooster/shared-lib": ["@willbooster/shared-lib@10.19.1", "", {}, "sha512-Iff+FTSFs0pvgErUIxRYgZ7kn36IupFYp1u3mh1+ddaSby3tWAE9riCjaFixb5a3AqH64bYZiNVMgajO7dMkmQ=="],
 
     "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@13.5.0", "", { "dependencies": { "@types/yargs": "17.0.35", "dotenv-expand": "13.0.0", "fast-glob": "3.3.3" } }, "sha512-3knJIeKcs3XbzwfteK+9q62UCzW2hfAwpVAanrVKhanKgXQRFdIc69COUwTpBZOdIoOkoFB8F6JROp6DFhdrMw=="],
 
