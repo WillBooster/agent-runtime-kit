@@ -35,7 +35,7 @@
     "verify-full": "bun wb verify --full"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "0.3.283",
+    "@anthropic-ai/claude-agent-sdk": "0.3.288",
     "@openai/codex-sdk": "0.157.1",
     "@willbooster/shared-lib": "10.19.1"
   },
@@ -45,9 +45,9 @@
     "@willbooster/oxfmt-config": "1.2.2",
     "@willbooster/oxlint-config": "1.4.8",
     "@willbooster/wb": "22.18.0",
-    "build-ts": "21.0.19",
+    "build-ts": "21.0.20",
     "conventional-changelog-conventionalcommits": "10.4.0",
-    "lefthook": "2.1.14",
+    "lefthook": "2.1.16",
     "oxfmt": "0.71.0",
     "oxlint": "1.86.0",
     "oxlint-tsgolint": "7.0.2003",
